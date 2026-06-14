@@ -7,11 +7,7 @@ export default function Home() {
 
       <ul>
         <li>
-          <Link href="/doctor">Doctor Dashboard</Link>
-        </li>
-
-        <li>
-          <Link href="/patient">Patient Dashboard</Link>
+          <Link href="/login">Login</Link>
         </li>
 
         <li>
@@ -19,17 +15,15 @@ export default function Home() {
         </li>
 
         <li>
-          <Link href="/appointment">Appointments</Link>
+          <Link href="/appointment">Book Appointment</Link>
         </li>
-        <li> <Link href="/doctor-queue"> Doctor Queue</Link>
+
+        <li>
+          <Link href="/doctor-dashboard">Doctor Dashboard</Link>
         </li>
-        <li><Link href="/patient-queue">Patient Queue</Link>
-        </li>
-        <li><Link href="/doctor-dashboard">Doctor Dashboard</Link>
-        </li>
-        <li><Link href="/patient-dashboard">Patient Dashboard</Link>
-        </li>
-        <li><Link href="/login">Login</Link>
+
+        <li>
+          <Link href="/patient-dashboard">Patient Dashboard</Link>
         </li>
       </ul>
     </main>
