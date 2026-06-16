@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AppointmentPage() {
+function AppointmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -51,14 +51,11 @@ export default function AppointmentPage() {
       <section className="max-w-5xl mx-auto px-6 py-12">
         <div className="mb-8">
           <p className="text-blue-600 font-semibold">Book your visit</p>
-
           <h1 className="text-4xl font-extrabold tracking-tight mt-2">
             Schedule an Appointment
           </h1>
-
           <p className="text-slate-600 mt-3">
-            Confirm the recommended clinic, choose a time slot, and join the
-            live queue.
+            Confirm the recommended clinic, choose a time slot, and join the live queue.
           </p>
         </div>
 
@@ -71,14 +68,8 @@ export default function AppointmentPage() {
               <p className="text-blue-600 text-sm font-semibold">
                 SELECTED CARE OPTION
               </p>
-
-              <h2 className="text-2xl font-extrabold mt-2">
-                {doctorName}
-              </h2>
-
-              <p className="text-slate-600 mt-1">
-                {specialty}
-              </p>
+              <h2 className="text-2xl font-extrabold mt-2">{doctorName}</h2>
+              <p className="text-slate-600 mt-1">{specialty}</p>
             </div>
 
             <div>
@@ -148,14 +139,8 @@ export default function AppointmentPage() {
           </form>
 
           <aside className="bg-blue-600 text-white rounded-3xl shadow-sm p-8 h-fit">
-            <p className="text-blue-100 font-semibold">
-              Smart Queue Benefit
-            </p>
-
-            <h2 className="text-2xl font-bold mt-3">
-              Book now. Leave later.
-            </h2>
-
+            <p className="text-blue-100 font-semibold">Smart Queue Benefit</p>
+            <h2 className="text-2xl font-bold mt-3">Book now. Leave later.</h2>
             <p className="text-blue-100 mt-4">
               After booking, MediQueue tracks queue movement and predicts when
               you should leave based on estimated wait and travel time.
@@ -177,5 +162,19 @@ export default function AppointmentPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function AppointmentPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p className="text-slate-500">Loading appointment...</p>
+        </main>
+      }
+    >
+      <AppointmentContent />
+    </Suspense>
   );
 }
