@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
@@ -168,5 +168,20 @@ const dashboardLink =
         </div>
       </section>
     </main>
+  );
+}
+export default function ConfirmationPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+          <p className="text-slate-500 dark:text-slate-400">
+            Loading confirmation...
+          </p>
+        </main>
+      }
+    >
+      <ConfirmationContent />
+    </Suspense>
   );
 }
