@@ -9,6 +9,7 @@ function AppointmentContent() {
 
   const selectedDoctor = searchParams.get("doctor") || "Dr. Sarah Ahmed";
   const selectedSpecialty = searchParams.get("specialty") || "Cardiologist";
+  const from = searchParams.get("from") || "patient";
 
   const [patientName, setPatientName] = useState("");
   const [doctorName, setDoctorName] = useState(selectedDoctor);
@@ -40,7 +41,7 @@ function AppointmentContent() {
     setLoading(false);
 
     if (data.success) {
-      router.push("/confirmation");
+      router.push(`/confirmation?from=${from}`);
     } else {
       alert(data.error);
     }
@@ -64,12 +65,12 @@ function AppointmentContent() {
             onSubmit={bookAppointment}
             className="lg:col-span-2 bg-white border border-slate-100 rounded-3xl shadow-sm p-8 flex flex-col gap-5"
           >
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+            <div className="bg-blue-50 dark:bg-blue-500/15 border border-blue-100 dark:border-blue-400/30 rounded-2xl p-5">
               <p className="text-blue-600 text-sm font-semibold">
                 SELECTED CARE OPTION
               </p>
-              <h2 className="text-2xl font-extrabold mt-2">{doctorName}</h2>
-              <p className="text-slate-600 mt-1">{specialty}</p>
+              <h2 className="text-2xl font-extrabold mt-2 text-slate-900 dark:text-white">{doctorName}</h2>
+              <p className="text-slate-600 dark:text-slate-300 mt-1">{specialty}</p>
             </div>
 
             <div>

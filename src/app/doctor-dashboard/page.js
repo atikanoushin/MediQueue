@@ -6,13 +6,18 @@ import Link from "next/link";
 export default function DoctorDashboardPage() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clearing, setClearing] = useState(false);
 
   const fetchAppointments = async () => {
     const response = await fetch("/api/appointments");
     const data = await response.json();
 
     if (data.success) {
-      setAppointments(data.appointments);
+      const sortedAppointments = [...data.appointments].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
+
+      setAppointments(sortedAppointments);
     }
 
     setLoading(false);
@@ -21,6 +26,25 @@ export default function DoctorDashboardPage() {
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  const clearQueue = async () => {
+    const confirmClear = confirm(
+      "Are you sure you want to clear all demo appointments?"
+    );
+
+    if (!confirmClear) return;
+
+    setClearing(true);
+
+    for (const appointment of appointments) {
+      await fetch(`/api/appointments?id=${appointment.id}`, {
+        method: "DELETE",
+      });
+    }
+
+    setAppointments([]);
+    setClearing(false);
+  };
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -40,7 +64,7 @@ export default function DoctorDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
             <p className="text-sm font-semibold text-slate-500">
-              TODAY'S APPOINTMENTS
+              TODAY&apos;S APPOINTMENTS
             </p>
 
             <h2 className="text-5xl font-extrabold text-blue-600 mt-4">
@@ -71,23 +95,24 @@ export default function DoctorDashboardPage() {
 
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
             <p className="text-sm font-semibold text-slate-500">
-              PRESCRIPTIONS
+              DEMO CONTROLS
             </p>
 
             <h2 className="text-2xl font-bold mt-4">
-              Create Digital Prescription
+              Reset Appointment Queue
             </h2>
 
             <p className="text-slate-500 mt-2">
-              Generate downloadable PDF prescriptions.
+              Clear all demo appointments before recording or presenting.
             </p>
 
-            <Link
-              href="/prescription"
-              className="inline-block mt-5 bg-blue-600 text-white px-5 py-2 rounded-xl font-semibold"
+            <button
+              onClick={clearQueue}
+              disabled={clearing || appointments.length === 0}
+              className="inline-block mt-5 bg-red-600 text-white px-5 py-2 rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-60"
             >
-              Create Prescription
-            </Link>
+              {clearing ? "Clearing..." : "Clear Demo Queue"}
+            </button>
           </div>
         </div>
 
@@ -95,7 +120,7 @@ export default function DoctorDashboardPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold">
-                Today's Appointment List
+                Today&apos;s Appointment List
               </h2>
 
               <p className="text-slate-500 mt-1">
@@ -104,7 +129,7 @@ export default function DoctorDashboardPage() {
             </div>
 
             <Link
-              href="/appointment"
+              href="/appointment?from=doctor"
               className="bg-blue-600 text-white px-5 py-2 rounded-xl font-semibold hover:bg-blue-700 transition"
             >
               Add Appointment

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import jsPDF from "jspdf";
+import Link from "next/link";
 
 export default function PrescriptionPage() {
   const [patientName, setPatientName] = useState("");
@@ -32,54 +33,111 @@ export default function PrescriptionPage() {
   };
 
   return (
-    <main className="p-10">
-      <h1 className="text-3xl font-bold">
-        Create Prescription
-      </h1>
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">
+      <section className="max-w-5xl mx-auto px-6 py-12">
+        <div>
+          <p className="text-blue-600 dark:text-blue-400 font-semibold">
+            Doctor Tools
+          </p>
 
-      <form
-        onSubmit={generatePDF}
-        className="mt-6 flex flex-col gap-4"
-      >
-        <input
-          type="text"
-          placeholder="Patient Name"
-          value={patientName}
-          onChange={(e) => setPatientName(e.target.value)}
-          className="border p-2 rounded"
-        />
+          <h1 className="text-4xl font-extrabold mt-2">
+            Create Prescription
+          </h1>
 
-        <input
-          type="text"
-          placeholder="Medicine Name"
-          value={medicineName}
-          onChange={(e) => setMedicineName(e.target.value)}
-          className="border p-2 rounded"
-        />
+          <p className="text-slate-500 dark:text-slate-400 mt-2">
+            Generate a downloadable prescription PDF for the current patient.
+          </p>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Dosage"
-          value={dosage}
-          onChange={(e) => setDosage(e.target.value)}
-          className="border p-2 rounded"
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
+          <form
+            onSubmit={generatePDF}
+            className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl shadow-sm p-8 flex flex-col gap-5"
+          >
+            <div>
+              <label className="font-semibold text-sm">Patient Name</label>
+              <input
+                type="text"
+                placeholder="Enter patient name"
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                className="mt-2 w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:border-blue-500"
+                required
+              />
+            </div>
 
-        <textarea
-          placeholder="Instructions"
-          value={instructions}
-          onChange={(e) => setInstructions(e.target.value)}
-          className="border p-2 rounded"
-          rows="4"
-        />
+            <div>
+              <label className="font-semibold text-sm">Medicine Name</label>
+              <input
+                type="text"
+                placeholder="Example: Napa Extra"
+                value={medicineName}
+                onChange={(e) => setMedicineName(e.target.value)}
+                className="mt-2 w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:border-blue-500"
+                required
+              />
+            </div>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Generate Prescription PDF
-        </button>
-      </form>
+            <div>
+              <label className="font-semibold text-sm">Dosage</label>
+              <input
+                type="text"
+                placeholder="Example: 1 tablet twice daily"
+                value={dosage}
+                onChange={(e) => setDosage(e.target.value)}
+                className="mt-2 w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:border-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="font-semibold text-sm">Instructions</label>
+              <textarea
+                placeholder="Example: Take after meals for 3 days."
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                className="mt-2 w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:border-blue-500"
+                rows="5"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="mt-3 bg-blue-600 text-white py-3 rounded-xl font-semibold shadow-md hover:bg-blue-700 hover:scale-[1.01] transition"
+            >
+              Generate Prescription PDF
+            </button>
+          </form>
+
+          <aside className="bg-blue-600 text-white rounded-3xl shadow-sm p-8 h-fit">
+            <p className="text-blue-100 font-semibold">
+              PDF Prescription
+            </p>
+
+            <h2 className="text-2xl font-bold mt-3">
+              Fast digital documentation.
+            </h2>
+
+            <p className="text-blue-100 mt-4">
+              Doctors can create a simple prescription and patients can download
+              it as a PDF after the visit.
+            </p>
+
+            <div className="bg-white/15 rounded-2xl p-5 mt-6">
+              <p className="text-sm text-blue-100">Format</p>
+              <p className="text-3xl font-bold mt-2">PDF</p>
+            </div>
+
+            <Link
+              href="/doctor-queue"
+              className="inline-block mt-6 bg-white text-blue-600 px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
+            >
+              Back to Queue
+            </Link>
+          </aside>
+        </div>
+      </section>
     </main>
   );
 }

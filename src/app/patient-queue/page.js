@@ -26,13 +26,13 @@ export default function PatientQueuePage() {
     return () => clearInterval(interval);
   }, []);
 
-const sortedAppointments = [...appointments].sort(
-  (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-);
+  const sortedAppointments = [...appointments].sort(
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+  );
 
-const currentPatient = sortedAppointments[0];
-const myAppointment = sortedAppointments[sortedAppointments.length - 1];
-const myPosition = sortedAppointments.length;
+  const currentPatient = sortedAppointments[0];
+  const myAppointment = sortedAppointments[sortedAppointments.length - 1];
+  const myPosition = sortedAppointments.length;
 
   const averageDoctorTime = 5;
   const travelTime = 11;
@@ -42,21 +42,24 @@ const myPosition = sortedAppointments.length;
   const leaveIn = Math.max(estimatedWait - travelTime - bufferTime, 0);
 
   let alertMessage = "You have enough time before leaving.";
-  let alertStyle = "bg-green-100 text-green-700";
+  let alertStyle =
+    "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300";
 
   if (leaveIn === 0 && myAppointment) {
     alertMessage = "You should leave now to arrive on time.";
-    alertStyle = "bg-red-100 text-red-700";
+    alertStyle =
+      "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300";
   } else if (leaveIn <= 5 && myAppointment) {
     alertMessage = "Queue is moving soon. Get ready to leave.";
-    alertStyle = "bg-yellow-100 text-yellow-700";
+    alertStyle =
+      "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-300";
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
       <section className="max-w-5xl mx-auto px-6 py-12">
         <div>
-          <p className="text-blue-600 font-semibold">
+          <p className="text-blue-600 dark:text-blue-400 font-semibold">
             Smart Queue Prediction
           </p>
 
@@ -64,20 +67,22 @@ const myPosition = sortedAppointments.length;
             Queue Status
           </h1>
 
-          <p className="text-slate-500 mt-2">
+          <p className="text-slate-500 dark:text-slate-400 mt-2">
             Track your position and know exactly when to leave.
           </p>
         </div>
 
         {loading && (
-          <p className="mt-8 text-slate-500">Loading queue...</p>
+          <p className="mt-8 text-slate-500 dark:text-slate-400">
+            Loading queue...
+          </p>
         )}
 
         {!loading && (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
-              <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm p-8">
-                <p className="text-sm font-semibold text-blue-600">
+              <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-8">
+                <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                   CURRENT PATIENT
                 </p>
 
@@ -85,12 +90,12 @@ const myPosition = sortedAppointments.length;
                   {currentPatient ? currentPatient.patientName : "No Patients"}
                 </h2>
 
-                <p className="text-slate-500 mt-2">
+                <p className="text-slate-500 dark:text-slate-400 mt-2">
                   Doctor is currently seeing this patient.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                  <div className="bg-slate-50 rounded-2xl p-5">
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5">
                     <p className="text-slate-400 text-sm">Your Name</p>
                     <p className="font-bold text-lg mt-1">
                       {myAppointment
@@ -99,16 +104,16 @@ const myPosition = sortedAppointments.length;
                     </p>
                   </div>
 
-                  <div className="bg-blue-50 rounded-2xl p-5">
-                    <p className="text-blue-600 text-sm font-semibold">
+                  <div className="bg-blue-50 dark:bg-blue-500/15 rounded-2xl p-5">
+                    <p className="text-blue-600 dark:text-blue-300 text-sm font-semibold">
                       Your Position
                     </p>
-                    <p className="font-extrabold text-3xl text-blue-600 mt-1">
+                    <p className="font-extrabold text-3xl text-blue-600 dark:text-blue-300 mt-1">
                       {myAppointment ? `#${myPosition}` : "-"}
                     </p>
                   </div>
 
-                  <div className="bg-slate-50 rounded-2xl p-5">
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5">
                     <p className="text-slate-400 text-sm">
                       Estimated Wait
                     </p>
@@ -119,7 +124,7 @@ const myPosition = sortedAppointments.length;
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-                  <div className="bg-slate-50 rounded-2xl p-5">
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5">
                     <p className="text-slate-400 text-sm">
                       Avg Doctor Time
                     </p>
@@ -128,7 +133,7 @@ const myPosition = sortedAppointments.length;
                     </p>
                   </div>
 
-                  <div className="bg-slate-50 rounded-2xl p-5">
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5">
                     <p className="text-slate-400 text-sm">
                       Travel Time
                     </p>
@@ -137,7 +142,7 @@ const myPosition = sortedAppointments.length;
                     </p>
                   </div>
 
-                  <div className="bg-slate-50 rounded-2xl p-5">
+                  <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5">
                     <p className="text-slate-400 text-sm">
                       Safety Buffer
                     </p>
@@ -182,44 +187,45 @@ const myPosition = sortedAppointments.length;
             </div>
 
             <div className={`mt-8 rounded-2xl p-5 font-semibold ${alertStyle}`}>
-  {alertMessage}
-</div>
+              {alertMessage}
+            </div>
 
-<div className="mt-5 bg-white border border-slate-100 rounded-3xl shadow-sm p-6">
-  <p className="text-blue-600 font-semibold">
-    SMART ALERT PREVIEW
-  </p>
+            <div className="mt-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl shadow-sm p-6">
+              <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                SMART ALERT PREVIEW
+              </p>
 
-  <h3 className="text-2xl font-extrabold mt-3">
-    {leaveIn === 0
-      ? "Leave now to arrive on time."
-      : `Leave in ${leaveIn} minutes.`}
-  </h3>
+              <h3 className="text-2xl font-extrabold mt-3">
+                {leaveIn === 0
+                  ? "Leave now to arrive on time."
+                  : `Leave in ${leaveIn} minutes.`}
+              </h3>
 
-  <p className="text-slate-500 mt-3">
-    MediQueue compares your queue position, average doctor time, estimated
-    travel time, and safety buffer to recommend when you should leave.
-  </p>
+              <p className="text-slate-500 dark:text-slate-400 mt-3">
+                MediQueue compares your queue position, average doctor time,
+                estimated travel time, and safety buffer to recommend when you
+                should leave.
+              </p>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-    <div className="bg-slate-50 rounded-2xl p-4">
-      <p className="text-slate-400 text-sm">Queue Wait</p>
-      <p className="font-bold">{estimatedWait} min</p>
-    </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4">
+                  <p className="text-slate-400 text-sm">Queue Wait</p>
+                  <p className="font-bold">{estimatedWait} min</p>
+                </div>
 
-    <div className="bg-slate-50 rounded-2xl p-4">
-      <p className="text-slate-400 text-sm">Travel Time</p>
-      <p className="font-bold">{travelTime} min</p>
-    </div>
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4">
+                  <p className="text-slate-400 text-sm">Travel Time</p>
+                  <p className="font-bold">{travelTime} min</p>
+                </div>
 
-    <div className="bg-slate-50 rounded-2xl p-4">
-      <p className="text-slate-400 text-sm">Recommendation</p>
-      <p className="font-bold">
-        {leaveIn === 0 ? "Leave now" : `${leaveIn} min`}
-      </p>
-    </div>
-  </div>
-</div>
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4">
+                  <p className="text-slate-400 text-sm">Recommendation</p>
+                  <p className="font-bold">
+                    {leaveIn === 0 ? "Leave now" : `${leaveIn} min`}
+                  </p>
+                </div>
+              </div>
+            </div>
           </>
         )}
 
@@ -233,7 +239,7 @@ const myPosition = sortedAppointments.length;
 
           <Link
             href="/appointment"
-            className="border border-blue-600 text-blue-600 px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
+            className="border border-blue-600 text-blue-600 dark:text-blue-300 dark:border-blue-400 px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-slate-900 transition"
           >
             Book Another Appointment
           </Link>

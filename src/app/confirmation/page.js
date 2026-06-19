@@ -2,10 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function ConfirmationPage() {
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") || "patient";
+
+const queueLink = from === "doctor" ? "/doctor-queue" : "/patient-queue";
+const dashboardLink =
+  from === "doctor" ? "/doctor-dashboard" : "/patient-dashboard";
 
   const fetchLatestAppointment = async () => {
     const response = await fetch("/api/appointments");
@@ -128,16 +135,16 @@ export default function ConfirmationPage() {
             </div>
           </div>
 
-          <div className="mt-8 p-5 rounded-2xl bg-blue-50 border border-blue-100">
+          <div className="mt-8 p-5 rounded-2xl bg-blue-50 dark:bg-blue-500/15 border border-blue-100 dark:border-blue-400/30">
             <p className="text-sm text-blue-600 font-semibold">
               QUEUE STATUS
             </p>
 
-            <h3 className="text-3xl font-extrabold mt-2">
+            <h3 className="text-3xl font-extrabold mt-2 text-slate-900 dark:text-white">
               #{appointment.queuePosition || 1}
             </h3>
 
-            <p className="text-slate-600 mt-2">
+            <p className="text-slate-600 dark:text-slate-300 mt-2">
               You have joined the live queue. MediQueue will estimate when you
               should leave based on queue speed and travel time.
             </p>
@@ -145,17 +152,17 @@ export default function ConfirmationPage() {
 
           <div className="flex flex-col md:flex-row gap-4 mt-8">
             <Link
-              href="/patient-queue"
+              href={queueLink}
               className="flex-1 bg-blue-600 text-white text-center py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
             >
-              Track Queue
+              {from === "doctor" ? "View Doctor Queue" : "Track Queue"}
             </Link>
 
             <Link
-              href="/patient-dashboard"
+              href={dashboardLink}
               className="flex-1 border border-blue-600 text-blue-600 text-center py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
             >
-              Go To Dashboard
+              {from === "doctor" ? "Go To Doctor Dashboard" : "Go To Dashboard"}
             </Link>
           </div>
         </div>
