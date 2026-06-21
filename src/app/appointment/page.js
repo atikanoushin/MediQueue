@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { auth } from "@/lib/firebase";
 
 function AppointmentContent() {
   const router = useRouter();
@@ -20,6 +21,10 @@ function AppointmentContent() {
 
   const bookAppointment = async (event) => {
     event.preventDefault();
+    if (!auth.currentUser) {
+  router.push("/login");
+  return;
+}
     setLoading(true);
 
     const response = await fetch("/api/appointments", {

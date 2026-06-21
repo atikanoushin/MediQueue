@@ -2,9 +2,13 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 function ConfirmationContent() {
+  const router = useRouter();
+const [checkingAuth, setCheckingAuth] = useState(true);
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
@@ -30,9 +34,28 @@ const dashboardLink =
   };
 
   useEffect(() => {
-    fetchLatestAppointment();
-  }, []);
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
 
+    fetchLatestAppointment();
+    setCheckingAuth(false);
+  });
+
+  return () => unsubscribe();
+}, [router]);
+
+  if (checkingAuth) {
+  return (
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <p className="text-slate-500 dark:text-slate-400">
+        Checking access...
+      </p>
+    </main>
+  );
+}
   if (loading) {
     return (
       <main className="min-h-screen bg-slate-50 flex items-center justify-center">

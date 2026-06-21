@@ -37,9 +37,6 @@ export default function LoginPage() {
     }
   };
 
-  const continueAsGuest = () => {
-    router.push("/care-finder");
-  };
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -107,21 +104,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={continueAsGuest}
-              className="mt-8 w-full bg-slate-900 text-white p-3 rounded-xl font-semibold hover:bg-slate-800 transition"
-            >
-              Continue as Guest
-            </button>
-
-            <div className="flex items-center gap-3 my-6">
-              <div className="h-px bg-slate-200 flex-1" />
-              <p className="text-sm text-slate-400">or use account</p>
-              <div className="h-px bg-slate-200 flex-1" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
               <div>
                 <label className="text-sm font-semibold">Email</label>
                 <input
