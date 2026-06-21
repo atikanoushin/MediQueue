@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function PatientDashboardPage() {
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [canceling, setCanceling] = useState(false);
+  const router = useRouter();
 
   const fetchLatestAppointment = async () => {
     const response = await fetch("/api/appointments");
@@ -24,8 +28,17 @@ export default function PatientDashboardPage() {
   };
 
   useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     fetchLatestAppointment();
-  }, []);
+  });
+
+  return () => unsubscribe();
+}, [router]);
 
   const cancelAppointment = async () => {
     if (!appointment) return;
@@ -60,22 +73,40 @@ export default function PatientDashboardPage() {
       </main>
     );
   }
+  const handleLogout = async () => {
+  await signOut(auth);
+  router.push("/");
+};
 
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="max-w-6xl mx-auto px-6 py-12">
-        <div>
-          <p className="text-blue-600 font-semibold">
-            Patient Portal
-          </p>
-          <h1 className="text-4xl font-extrabold mt-2 force-light-title">
-  Welcome back
-</h1>
+       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
 
-          <p className="text-slate-500 mt-2">
-            Manage appointments, prescriptions, and queue status.
-          </p>
-        </div>
+  <div>
+    <p className="text-blue-600 font-semibold">
+      Patient Portal
+    </p>
+
+    <h1 className="text-4xl font-extrabold mt-2 force-light-title">
+      Welcome back
+    </h1>
+
+    <p className="text-slate-500 mt-2">
+      Manage appointments, prescriptions, and queue status.
+    </p>
+  </div>
+
+  <button
+    onClick={handleLogout}
+    className="border border-slate-300 text-slate-700 dark:text-white dark:border-slate-700 px-5 py-2 rounded-xl font-semibold hover:border-red-400 hover:text-red-600 transition"
+  >
+    Logout
+  </button>
+
+</div>
+
+        
 
         {!appointment && (
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 mt-10">

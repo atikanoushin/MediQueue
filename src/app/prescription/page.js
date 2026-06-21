@@ -1,14 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function PrescriptionPage() {
   const [patientName, setPatientName] = useState("");
   const [medicineName, setMedicineName] = useState("");
   const [dosage, setDosage] = useState("");
   const [instructions, setInstructions] = useState("");
+  const router = useRouter();
+const [checkingAuth, setCheckingAuth] = useState(true);
+
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    setCheckingAuth(false);
+  });
+
+  return () => unsubscribe();
+}, [router]);
+
+if (checkingAuth) {
+  return (
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <p className="text-slate-500 dark:text-slate-400">
+        Checking access...
+      </p>
+    </main>
+  );
+}
 
   const generatePDF = (event) => {
     event.preventDefault();

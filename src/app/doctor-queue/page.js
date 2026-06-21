@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function DoctorQueuePage() {
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const router = useRouter();
 
   const fetchQueue = async () => {
     const response = await fetch("/api/appointments");
@@ -24,8 +28,17 @@ export default function DoctorQueuePage() {
   };
 
   useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     fetchQueue();
-  }, []);
+  });
+
+  return () => unsubscribe();
+}, [router]);
 
   const handleNextPatient = async () => {
     const currentPatient = queue[0];
