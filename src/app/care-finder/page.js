@@ -206,8 +206,13 @@ if (
     }
   };
 
-  const bestOption = result?.options[0];
-  const otherOptions = result?.options.slice(1);
+const bestOption = result?.emergency
+  ? null
+  : result?.options?.[0];
+
+const otherOptions = result?.emergency
+  ? []
+  : result?.options?.slice(1) || [];
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
