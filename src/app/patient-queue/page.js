@@ -164,9 +164,9 @@ const bufferTime = 3;
     QUEUE SPEED LEARNING
   </p>
 
-  <h3 className="text-2xl font-extrabold mt-2">
-    Dynamic wait prediction
-  </h3>
+  <h3 className="text-xl font-bold mt-2">
+  Dynamic Wait Prediction
+</h3>
 
   <p className="text-slate-500 dark:text-slate-400 mt-2">
     MediQueue estimates wait time using recent visit durations instead of a
