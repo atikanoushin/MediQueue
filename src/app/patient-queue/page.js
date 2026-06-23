@@ -34,11 +34,20 @@ export default function PatientQueuePage() {
   const myAppointment = sortedAppointments[sortedAppointments.length - 1];
   const myPosition = sortedAppointments.length;
 
-  const averageDoctorTime = 5;
-  const travelTime = 11;
-  const bufferTime = 3;
+  const recentVisitTimes = [4, 6, 5, 8, 4, 7];
 
-  const estimatedWait = myAppointment ? (myPosition - 1) * averageDoctorTime : 0;
+const averageDoctorTime =
+  recentVisitTimes.reduce((total, time) => total + time, 0) /
+  recentVisitTimes.length;
+
+const roundedAverageDoctorTime = Math.round(averageDoctorTime);
+
+const travelTime = 11;
+const bufferTime = 3;
+
+  const estimatedWait = myAppointment
+  ? Math.round((myPosition - 1) * averageDoctorTime)
+  : 0;
   const leaveIn = Math.max(estimatedWait - travelTime - bufferTime, 0);
 
   let alertMessage = "You have enough time before leaving.";
@@ -129,7 +138,7 @@ export default function PatientQueuePage() {
                       Avg Doctor Time
                     </p>
                     <p className="font-bold text-lg mt-1">
-                      {averageDoctorTime} min / patient
+                      {roundedAverageDoctorTime} min / patient
                     </p>
                   </div>
 
@@ -150,6 +159,31 @@ export default function PatientQueuePage() {
                       {bufferTime} min
                     </p>
                   </div>
+                  <div className="bg-blue-50 dark:bg-blue-500/15 rounded-2xl p-5 mt-5 border border-blue-100 dark:border-blue-400/30">
+  <p className="text-blue-600 dark:text-blue-300 text-sm font-semibold">
+    QUEUE SPEED LEARNING
+  </p>
+
+  <h3 className="text-2xl font-extrabold mt-2">
+    Dynamic wait prediction
+  </h3>
+
+  <p className="text-slate-500 dark:text-slate-400 mt-2">
+    MediQueue estimates wait time using recent visit durations instead of a
+    fixed number for every patient.
+  </p>
+
+  <div className="flex flex-wrap gap-2 mt-4">
+    {recentVisitTimes.map((time, index) => (
+      <span
+        key={index}
+        className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-3 py-1 rounded-full text-sm font-semibold"
+      >
+        {time} min
+      </span>
+    ))}
+  </div>
+</div>
                 </div>
               </div>
 

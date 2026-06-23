@@ -73,25 +73,37 @@ export default function CareFinderPage() {
       reason,
       savedTime,
       options: [
-        {
-          clinic: clinics[0],
-          wait: "12 minutes",
-          distance: "2.4 miles",
-          tag: "Best Match",
-        },
-        {
-          clinic: clinics[1],
-          wait: "25 minutes",
-          distance: "3.1 miles",
-          tag: "Nearby",
-        },
-        {
-          clinic: clinics[2],
-          wait: "1 hour 40 minutes",
-          distance: "5.2 miles",
-          tag: "Long Wait",
-        },
-      ],
+  {
+    clinic: clinics[0],
+    wait: "12 minutes",
+    waitMinutes: 12,
+    travelMinutes: 8,
+    treatmentDelayMinutes: 5,
+    totalTreatmentMinutes: 25,
+    distance: "2.4 miles",
+    tag: "Best Match",
+  },
+  {
+    clinic: clinics[1],
+    wait: "25 minutes",
+    waitMinutes: 25,
+    travelMinutes: 13,
+    treatmentDelayMinutes: 8,
+    totalTreatmentMinutes: 46,
+    distance: "3.1 miles",
+    tag: "Nearby",
+  },
+  {
+    clinic: clinics[2],
+    wait: "1 hour 40 minutes",
+    waitMinutes: 100,
+    travelMinutes: 18,
+    treatmentDelayMinutes: 15,
+    totalTreatmentMinutes: 133,
+    distance: "5.2 miles",
+    tag: "Long Wait",
+  },
+],
     });
   };
 
@@ -213,6 +225,11 @@ const bestOption = result?.emergency
 const otherOptions = result?.emergency
   ? []
   : result?.options?.slice(1) || [];
+const slowestOption = result?.options?.[2] || null;
+const minutesSaved =
+  bestOption && slowestOption
+    ? slowestOption.totalTreatmentMinutes - bestOption.totalTreatmentMinutes
+    : 0;
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
@@ -378,6 +395,37 @@ const otherOptions = result?.emergency
                   </div>
                 </div>
 
+                <div className="bg-green-50 dark:bg-green-500/15 rounded-2xl p-5 mt-6 border border-green-100 dark:border-green-400/30">
+  <p className="text-green-600 dark:text-green-300 text-sm font-semibold">
+    TOTAL TIME TO TREATMENT
+  </p>
+
+  <h3 className="text-4xl font-extrabold mt-2 text-green-700 dark:text-green-300">
+    {bestOption.totalTreatmentMinutes} min
+  </h3>
+
+  <p className="text-slate-600 dark:text-slate-300 mt-2">
+    Includes estimated travel time, current queue wait, and treatment delay.
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+    <div>
+      <p className="text-slate-400 text-sm">Travel</p>
+      <p className="font-bold">{bestOption.travelMinutes} min</p>
+    </div>
+
+    <div>
+      <p className="text-slate-400 text-sm">Queue</p>
+      <p className="font-bold">{bestOption.waitMinutes} min</p>
+    </div>
+
+    <div>
+      <p className="text-slate-400 text-sm">Clinic Delay</p>
+      <p className="font-bold">{bestOption.treatmentDelayMinutes} min</p>
+    </div>
+  </div>
+</div>
+
                 <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-5 mt-6">
                   <p className="font-bold">Why this recommendation?</p>
                   <p className="text-slate-600 mt-2">{result.reason}</p>
@@ -406,11 +454,11 @@ const otherOptions = result?.emergency
                 <p className="text-blue-100 font-semibold">WAIT TIME SAVED</p>
 
                 <h3 className="text-5xl font-extrabold mt-4">
-                  {result.savedTime}
+                  {minutesSaved} min
                 </h3>
 
                 <p className="text-blue-100 mt-3">
-                  compared with the slowest nearby option.
+                  saved compared with the slowest nearby option.
                 </p>
 
                 <div className="bg-white/15 rounded-2xl p-5 mt-8">
