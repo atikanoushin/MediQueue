@@ -103,6 +103,24 @@ export default function CareFinderPage() {
 }
 
 const text = input.toLowerCase();
+if (
+  text.includes("difficulty breathing") ||
+  text.includes("can't breathe") ||
+  text.includes("heart attack") ||
+  text.includes("stroke") ||
+  text.includes("unconscious") ||
+  text.includes("severe bleeding") ||
+  text.includes("not breathing") ||
+  text.includes("choking")
+) {
+  setResult({
+    emergency: true,
+    message:
+      "Your symptoms may require immediate emergency care. Do not wait in a clinic queue. Call emergency services or visit the nearest emergency department immediately.",
+  });
+
+  return;
+}
 
     if (customSymptom) setSymptom(customSymptom);
 
@@ -246,12 +264,13 @@ const text = input.toLowerCase();
 
           <div className="flex flex-wrap gap-3 mt-4">
             {[
-              "My hand got burned",
-              "I sprained my wrist",
-              "I have chest pain",
-              "Skin rash",
-              "Fever and cough",
-            ].map((example) => (
+  "My hand got burned",
+  "I sprained my wrist",
+  "I have chest pain",
+  "Difficulty breathing",
+  "Skin rash",
+  "Fever and cough",
+].map((example) => (
               <button
                 key={example}
                 onClick={() => findCare(example)}
@@ -270,7 +289,33 @@ const text = input.toLowerCase();
           </button>
         </div>
 
-        {result && (
+        {result?.emergency && (
+  <div className="mt-8 bg-red-50 border-2 border-red-500 rounded-3xl p-8 shadow-sm">
+    <p className="text-red-600 font-bold text-lg">
+      🚨 EMERGENCY DETECTED
+    </p>
+
+    <h2 className="text-3xl font-extrabold mt-3 text-red-700">
+      Seek Immediate Medical Attention
+    </h2>
+
+    <p className="mt-4 text-red-600 text-lg">
+      {result.message}
+    </p>
+
+    <div className="bg-red-100 rounded-2xl p-5 mt-6">
+      <p className="font-semibold text-red-700">
+        Recommended Action
+      </p>
+
+      <p className="mt-2 text-red-600">
+        Call emergency services or go directly to the nearest emergency room.
+      </p>
+    </div>
+  </div>
+)}
+
+{result && !result.emergency && (
           <div className="mt-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-8">
