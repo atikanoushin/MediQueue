@@ -159,14 +159,14 @@ const bufferTime = 3;
                       {bufferTime} min
                     </p>
                   </div>
-                  <div className="bg-blue-50 dark:bg-blue-500/15 rounded-2xl p-5 mt-5 border border-blue-100 dark:border-blue-400/30">
+                  <div className="bg-blue-50 dark:bg-blue-500/15 rounded-2xl p-5 mt-5 border border-blue-100 dark:border-blue-400/30 md:col-span-3">
   <p className="text-blue-600 dark:text-blue-300 text-sm font-semibold">
     QUEUE SPEED LEARNING
   </p>
 
-  <h3 className="text-xl font-bold mt-2">
-  Dynamic Wait Prediction
-</h3>
+  <h3 className="text-2xl font-extrabold mt-2">
+    Dynamic wait prediction
+  </h3>
 
   <p className="text-slate-500 dark:text-slate-400 mt-2">
     MediQueue estimates wait time using recent visit durations instead of a

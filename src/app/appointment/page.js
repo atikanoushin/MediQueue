@@ -15,7 +15,7 @@ function AppointmentContent() {
   const [patientName, setPatientName] = useState("");
   const [doctorName, setDoctorName] = useState(selectedDoctor);
   const [specialty, setSpecialty] = useState(selectedSpecialty);
-  const [date, setDate] = useState("June 20, 2026");
+  const [date, setDate] = useState("");
   const [time, setTime] = useState("5:00 PM");
   const [loading, setLoading] = useState(false);
 
@@ -113,11 +113,14 @@ function AppointmentContent() {
             <div>
               <label className="font-semibold text-sm">Date</label>
               <input
-                type="text"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="mt-2 w-full border border-slate-200 p-3 rounded-xl outline-none focus:border-blue-500"
-              />
+  type="date"
+  value={date}
+  onChange={(e) => setDate(e.target.value)}
+  min="2026-01-01"
+  max="2030-12-31"
+  className="mt-2 w-full border border-slate-200 p-3 rounded-xl outline-none focus:border-blue-500"
+  required
+/>
             </div>
 
             <div>
