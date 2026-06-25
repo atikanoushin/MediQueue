@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 
 const clinicData = {
   newyork: {
@@ -115,6 +116,48 @@ export default function CareFinderPage() {
 }
 
 const text = input.toLowerCase();
+const knownSymptomWords = [
+  "burn",
+  "burned",
+  "fire",
+  "hot water",
+  "wrist",
+  "bone",
+  "arm",
+  "leg",
+  "sprain",
+  "heart",
+  "chest",
+  "skin",
+  "rash",
+  "head",
+  "headache",
+  "fever",
+  "cough",
+  "flu",
+  "cold",
+  "pain",
+  "hurt",
+  "injury",
+  "ache",
+  "swelling",
+  "bleeding",
+  "breathing",
+];
+
+const hasKnownSymptomWord = knownSymptomWords.some((word) =>
+  text.includes(word)
+);
+
+if (!hasKnownSymptomWord) {
+  setResult({
+    invalid: true,
+    message:
+      "We could not understand this as a symptom. Please describe what you are feeling, such as fever, wrist pain, burn, rash, chest pain, or headache.",
+  });
+
+  return;
+}
 if (
   text.includes("difficulty breathing") ||
   text.includes("can't breathe") ||
@@ -206,16 +249,17 @@ if (
         reason:
           "Fever, cough, and flu symptoms are usually best handled first by general medicine or primary care.",
       });
-    } else {
-      buildResult({
-        specialty: "General Medicine",
-        urgency: "General care",
-        savedTime: "50 min",
-        type: "general",
-        reason:
-          "We could not identify a specific specialty from your description, so we recommend starting with general medicine.",
-      });
-    }
+    } 
+    else {
+  buildResult({
+    specialty: "General Medicine",
+    urgency: "Needs review",
+    savedTime: "50 min",
+    type: "general",
+    reason:
+      "MediQueue could not confidently identify a specific specialty from your description. For safety, we recommend starting with general medicine or primary care, where the patient can be evaluated and referred if needed.",
+  });
+}
   };
 
 const bestOption = result?.emergency
@@ -233,12 +277,13 @@ const minutesSaved =
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
-      <section className="max-w-6xl mx-auto px-6 py-12 text-slate-900 dark:text-white">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <Navbar />
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-slate-900 dark:text-white">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
           <div className="lg:col-span-2">
             <p className="text-blue-600 font-semibold">QuickCare Locator</p>
 
-            <h1 className="text-5xl font-extrabold mt-3">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mt-3">
               Find the fastest appropriate care.
             </h1>
 
@@ -257,7 +302,7 @@ const minutesSaved =
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-8 mt-10">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-8 mt-10">
           <label className="font-semibold">Choose your location</label>
 
           <select
@@ -295,7 +340,7 @@ const minutesSaved =
 ].map((example) => (
               <button
                 key={example}
-                onClick={() => findCare(example)}
+                onClick={() => setSymptom(example)}
                 className="bg-slate-100 text-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-50 hover:text-blue-600 transition"
               >
                 {example}
@@ -311,8 +356,24 @@ const minutesSaved =
           </button>
         </div>
 
+        {result?.invalid && (
+  <div className="mt-8 bg-yellow-50 border-2 border-yellow-300 rounded-3xl p-8 shadow-sm">
+    <p className="text-yellow-700 font-bold text-lg">
+      We couldn't understand that symptom
+    </p>
+
+    <p className="mt-3 text-yellow-700">
+      {result.message}
+    </p>
+
+    <p className="mt-4 text-slate-600">
+      Try examples like: “I sprained my wrist”, “I have a fever”, or “My hand got burned.”
+    </p>
+  </div>
+)}
+
         {result?.emergency && (
-  <div className="mt-8 bg-red-50 border-2 border-red-500 rounded-3xl p-8 shadow-sm">
+  <div className="mt-8 bg-red-50 border-2 border-red-500 rounded-3xl p-5 sm:p-8 shadow-sm">
     <p className="text-red-600 font-bold text-lg">
       🚨 EMERGENCY DETECTED
     </p>
@@ -337,7 +398,7 @@ const minutesSaved =
   </div>
 )}
 
-{result && !result.emergency && (
+{result && !result.emergency && !result.invalid && (
           <div className="mt-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-8">
@@ -355,7 +416,9 @@ const minutesSaved =
                         : "bg-green-100 text-green-700"
                     }`}
                   >
-                    {result.urgency}
+                    {result.urgency === "Needs review"
+  ? "SAFE STARTING POINT"
+  : "BEST MATCH FOUND"}
                   </span>
                 </div>
 
@@ -515,5 +578,6 @@ const minutesSaved =
         )}
       </section>
     </main>
+    
   );
 }

@@ -158,7 +158,7 @@ export default function Home() {
 
                 <div className={`rounded-2xl p-4 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
                   <p className={isDark ? "text-slate-400 text-sm" : "text-slate-400 text-sm"}>
-                    Distance
+                    Estimated Distance
                   </p>
                   <p className="text-xl font-extrabold mt-1">2.4 mi</p>
                 </div>
@@ -186,6 +186,82 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14 animate-fade-up">
+  <div
+    className={`rounded-3xl border shadow-sm p-6 sm:p-10 ${
+      isDark
+        ? "bg-slate-900 border-slate-800"
+        : "bg-white border-slate-100"
+    }`}
+  >
+    <p className="text-blue-600 font-semibold">
+      Every recommendation follows a transparent, safety-first workflow.
+    </p>
+
+    <h2
+      className={`text-3xl sm:text-4xl font-extrabold mt-3 ${
+        isDark ? "text-white" : "text-slate-900"
+      }`}
+    >
+      From symptoms to the fastest safe care option.
+    </h2>
+
+    <p
+      className={`mt-4 max-w-3xl ${
+        isDark ? "text-slate-400" : "text-slate-500"
+      }`}
+    >
+      MediQueue follows a transparent decision flow: it checks symptoms,
+      detects emergencies, matches the right specialty, compares total time to
+      treatment, and recommends the fastest appropriate care.
+    </p>
+
+    <div className="mt-10 grid grid-cols-1 md:grid-cols-5 gap-4">
+      {[
+        ["🩺", "Symptoms", "Patient describes what they feel."],
+        ["🚨", "Emergency Check", "Dangerous symptoms are escalated immediately."],
+        ["🏥", "Match Specialty", "MediQueue finds the right care category."],
+        ["⏱️", "Compare Time", "Travel, queue, and delay are combined."],
+        ["✅", "Recommend", "The fastest safe option is shown first."],
+      ].map(([icon, title, text], index) => (
+        <div key={title} className="relative">
+          <div
+            className={`h-full rounded-2xl border p-5 ${
+              isDark
+                ? "bg-slate-800 border-slate-700"
+                : "bg-slate-50 border-slate-100"
+            }`}
+          >
+            <div className="text-3xl">{icon}</div>
+
+            <h3
+              className={`font-bold mt-4 ${
+                isDark ? "text-white" : "text-slate-900"
+              }`}
+            >
+              {title}
+            </h3>
+
+            <p
+              className={`text-sm mt-2 ${
+                isDark ? "text-slate-400" : "text-slate-500"
+              }`}
+            >
+              {text}
+            </p>
+          </div>
+
+          {index < 4 && (
+            <div className="hidden md:block absolute top-1/2 -right-3 text-blue-500 font-bold">
+              →
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
       <section className="max-w-6xl mx-auto px-6 pb-14 animate-fade-up">
         <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 border rounded-2xl shadow-sm p-6 ${
@@ -223,7 +299,7 @@ export default function Home() {
             ["1. Describe Symptoms", "Tell MediQueue what you’re experiencing."],
             ["2. Compare Care Options", "See nearby clinics by wait time, distance, and specialty."],
             ["3. Book Appointment", "Reserve your spot in the live queue."],
-            ["4. Leave On Time", "Get ETA guidance based on queue speed and travel time."],
+            ["4. Leave On Time", "Get ETA guidance based on queue speed and estimated travel time."],
           ].map(([title, desc]) => (
             <div
               key={title}

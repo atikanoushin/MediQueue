@@ -12,33 +12,50 @@ export default function PatientDashboardPage() {
   const [canceling, setCanceling] = useState(false);
   const router = useRouter();
 
-  const fetchLatestAppointment = async () => {
+  const fetchLatestAppointment = async (userEmail) => {
     const response = await fetch("/api/appointments");
     const data = await response.json();
 
     if (data.success && data.appointments.length > 0) {
-      const sortedAppointments = [...data.appointments].sort(
+      const userAppointments = data.appointments.filter(
+        (app) => app.userEmail === userEmail
+      );
+
+      if (userAppointments.length === 0) {
+        setAppointment(null);
+        setLoading(false);
+        return;
+      }
+
+      const sortedAppointments = [...userAppointments].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
 
       setAppointment(sortedAppointments[0]);
+    } else {
+      setAppointment(null);
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
 
-    fetchLatestAppointment();
-  });
+      fetchLatestAppointment(user.email);
+    });
 
-  return () => unsubscribe();
-}, [router]);
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/");
+  };
 
   const cancelAppointment = async () => {
     if (!appointment) return;
@@ -51,9 +68,12 @@ export default function PatientDashboardPage() {
 
     setCanceling(true);
 
-    const response = await fetch(`/api/appointments?id=${appointment.id}`, {
-      method: "DELETE",
-    });
+    const response = await fetch(
+      `/api/appointments?id=${appointment.id}&userEmail=${auth.currentUser.email}`,
+      {
+        method: "DELETE",
+      }
+    );
 
     const data = await response.json();
 
@@ -68,53 +88,47 @@ export default function PatientDashboardPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-500">Loading patient dashboard...</p>
+      <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">
+          Loading patient dashboard...
+        </p>
       </main>
     );
   }
-  const handleLogout = async () => {
-  await signOut(auth);
-  router.push("/");
-};
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="max-w-6xl mx-auto px-6 py-12">
-       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
+          <div>
+            <p className="text-blue-600 dark:text-blue-400 font-semibold">
+              Patient Portal
+            </p>
 
-  <div>
-    <p className="text-blue-600 font-semibold">
-      Patient Portal
-    </p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold mt-2 force-light-title">
+              Welcome back
+            </h1>
 
-    <h1 className="text-4xl font-extrabold mt-2 force-light-title">
-      Welcome back
-    </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2 max-w-2xl">
+              Manage appointments, prescriptions, and queue status.
+            </p>
+          </div>
 
-    <p className="text-slate-500 mt-2">
-      Manage appointments, prescriptions, and queue status.
-    </p>
-  </div>
-
-  <button
-    onClick={handleLogout}
-    className="border border-slate-300 text-slate-700 dark:text-white dark:border-slate-700 px-5 py-2 rounded-xl font-semibold hover:border-red-400 hover:text-red-600 transition"
-  >
-    Logout
-  </button>
-
-</div>
-
-        
+          <button
+            onClick={handleLogout}
+            className="w-full sm:w-auto border border-slate-300 text-slate-700 dark:text-white dark:border-slate-700 px-5 py-2 rounded-xl font-semibold hover:border-red-400 hover:text-red-600 transition"
+          >
+            Logout
+          </button>
+        </div>
 
         {!appointment && (
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 mt-10">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-8 mt-10">
             <h2 className="text-2xl font-bold">
               No active appointment
             </h2>
 
-            <p className="text-slate-500 mt-3">
+            <p className="text-slate-500 dark:text-slate-400 mt-3">
               You currently do not have an upcoming appointment.
             </p>
 
@@ -130,32 +144,34 @@ export default function PatientDashboardPage() {
         {appointment && (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
-              <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm p-8">
-                <p className="text-sm font-semibold text-blue-600">
+              <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-8">
+                <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                   UPCOMING APPOINTMENT
                 </p>
-                <h2 className="text-3xl font-bold mt-3 force-light-title">
-  {appointment.doctorName}
-</h2>
-                <p className="text-slate-500 mt-2">
+
+                <h2 className="text-2xl sm:text-3xl font-bold mt-3 force-light-title break-words">
+                  {appointment.doctorName}
+                </h2>
+
+                <p className="text-slate-500 dark:text-slate-400 mt-2">
                   {appointment.specialty} • {appointment.time}
                 </p>
 
-                <p className="text-slate-500 mt-1">
+                <p className="text-slate-500 dark:text-slate-400 mt-1">
                   Patient: {appointment.patientName}
                 </p>
 
-                <div className="flex flex-wrap gap-3 mt-6">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 mt-6">
                   <Link
                     href="/patient-queue"
-                    className="bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+                    className="bg-blue-600 text-white text-center px-5 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
                   >
                     Track Queue
                   </Link>
 
                   <Link
                     href="/appointment"
-                    className="border border-blue-600 text-blue-600 px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
+                    className="border border-blue-600 text-blue-600 dark:text-blue-300 dark:border-blue-400 text-center px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-slate-800 transition"
                   >
                     Book Another
                   </Link>
@@ -163,19 +179,19 @@ export default function PatientDashboardPage() {
                   <button
                     onClick={cancelAppointment}
                     disabled={canceling}
-                    className="border border-red-500 text-red-600 px-5 py-3 rounded-xl font-semibold hover:bg-red-50 transition disabled:opacity-60"
+                    className="border border-red-500 text-red-600 text-center px-5 py-3 rounded-xl font-semibold hover:bg-red-50 dark:hover:bg-red-500/10 transition disabled:opacity-60"
                   >
                     {canceling ? "Canceling..." : "Cancel Appointment"}
                   </button>
                 </div>
               </div>
 
-              <div className="bg-blue-600 text-white rounded-3xl shadow-sm p-8">
+              <div className="bg-blue-600 text-white rounded-3xl shadow-sm p-5 sm:p-8">
                 <p className="text-blue-100 font-semibold">
                   LIVE QUEUE
                 </p>
 
-                <h2 className="text-5xl font-extrabold mt-4">
+                <h2 className="text-4xl sm:text-5xl font-extrabold mt-4">
                   #{appointment.queuePosition || 1}
                 </h2>
 
@@ -193,36 +209,36 @@ export default function PatientDashboardPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 hover:-translate-y-1 transition">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-6 hover:-translate-y-1 transition">
                 <h3 className="font-bold text-lg force-light-title">
-  Prescription History
-</h3>
+                  Prescription History
+                </h3>
 
-                <p className="text-slate-500 mt-2">
+                <p className="text-slate-500 dark:text-slate-400 mt-2">
                   View all previous prescriptions.
                 </p>
 
                 <Link
                   href="/prescription-history"
-                  className="inline-block mt-4 text-blue-600 font-semibold"
+                  className="inline-block mt-4 text-blue-600 dark:text-blue-400 font-semibold"
                 >
                   Open →
                 </Link>
               </div>
 
-              <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 hover:-translate-y-1 transition">
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-6 hover:-translate-y-1 transition">
                 <h3 className="font-bold text-lg force-light-title">
-  Appointment History
-</h3>
+                  Appointment History
+                </h3>
 
-                <p className="text-slate-500 mt-2">
+                <p className="text-slate-500 dark:text-slate-400 mt-2">
                   Review previous doctor visits.
                 </p>
 
                 <Link
                   href="/appointment-history"
-                  className="inline-block mt-4 text-blue-600 font-semibold"
+                  className="inline-block mt-4 text-blue-600 dark:text-blue-400 font-semibold"
                 >
                   Open →
                 </Link>

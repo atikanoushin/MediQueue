@@ -28,9 +28,9 @@ export default function LoginPage() {
       }
 
       if (role === "doctor") {
-        router.push("/doctor-dashboard");
+        router.replace("/doctor-dashboard");
       } else {
-        router.push("/patient-dashboard");
+        router.replace("/patient-dashboard");
       }
     } catch (error) {
       alert(error.message);

@@ -4,18 +4,27 @@ import { PutCommand, ScanCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 export async function POST(request) {
   try {
     const body = await request.json();
+    const result = await dynamoDb.send(
+  new ScanCommand({
+    TableName: process.env.DYNAMODB_APPOINTMENTS_TABLE,
+  })
+);
+
+const currentAppointments = result.Items || [];
 
     const appointment = {
-      id: crypto.randomUUID(),
-      patientName: body.patientName,
-      doctorName: body.doctorName,
-      specialty: body.specialty,
-      date: body.date,
-      time: body.time,
-      status: "Booked",
-      queuePosition: body.queuePosition || 1,
-      createdAt: new Date().toISOString(),
-    };
+  id: crypto.randomUUID(),
+  patientName: body.patientName,
+  userEmail: body.userEmail,
+  doctorName: body.doctorName,
+  doctorEmail: body.doctorEmail,
+  specialty: body.specialty,
+  date: body.date,
+  time: body.time,
+  status: "Booked",
+  queuePosition: currentAppointments.length + 1,
+  createdAt: new Date().toISOString(),
+};
 
     await dynamoDb.send(
       new PutCommand({
@@ -39,17 +48,36 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+
+    const doctorEmail = searchParams.get("doctorEmail");
+    const userEmail = searchParams.get("userEmail");
+
     const result = await dynamoDb.send(
       new ScanCommand({
         TableName: process.env.DYNAMODB_APPOINTMENTS_TABLE,
       })
     );
 
+    let items = result.Items || [];
+
+    if (doctorEmail) {
+      items = items.filter(
+        (item) => item.doctorEmail === doctorEmail
+      );
+    }
+
+    if (userEmail) {
+      items = items.filter(
+        (item) => item.userEmail === userEmail
+      );
+    }
+
     return Response.json({
       success: true,
-      appointments: result.Items || [],
+      appointments: items,
     });
   } catch (error) {
     return Response.json(
@@ -61,42 +89,50 @@ export async function GET() {
     );
   }
 }
-
 export async function DELETE(request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+  const { searchParams } = new URL(request.url);
 
-    if (!id) {
-      return Response.json(
-        {
-          success: false,
-          error: "Appointment id is required",
-        },
-        { status: 400 }
-      );
-    }
+  const id = searchParams.get("id");
+  const userEmail = searchParams.get("userEmail");
 
-    await dynamoDb.send(
-      new DeleteCommand({
-        TableName: process.env.DYNAMODB_APPOINTMENTS_TABLE,
-        Key: {
-          id,
-        },
-      })
-    );
-
+  if (!id || !userEmail) {
     return Response.json({
-      success: true,
-      deletedId: id,
+      success: false,
+      error: "Missing parameters",
     });
-  } catch (error) {
-    return Response.json(
-      {
-        success: false,
-        error: error.message,
-      },
-      { status: 500 }
-    );
   }
+
+  const result = await dynamoDb.send(
+    new ScanCommand({
+      TableName: process.env.DYNAMODB_APPOINTMENTS_TABLE,
+    })
+  );
+
+  const appointment = result.Items?.find((item) => item.id === id);
+
+  if (!appointment) {
+    return Response.json({
+      success: false,
+      error: "Appointment not found",
+    });
+  }
+
+  if (appointment.userEmail !== userEmail) {
+    return Response.json({
+      success: false,
+      error: "Unauthorized action",
+    });
+  }
+
+  await dynamoDb.send(
+    new DeleteCommand({
+      TableName: process.env.DYNAMODB_APPOINTMENTS_TABLE,
+      Key: { id },
+    })
+  );
+
+  return Response.json({
+    success: true,
+    message: "Appointment cancelled successfully",
+  });
 }
