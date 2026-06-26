@@ -175,7 +175,7 @@ export default function PatientDashboardPage() {
                   </Link>
 
                   <Link
-                    href="/appointment"
+                    href="/care-finder"
                     className="border border-blue-600 text-blue-600 dark:text-blue-300 dark:border-blue-400 text-center px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-slate-800 transition"
                   >
                     Book Another
@@ -215,39 +215,39 @@ export default function PatientDashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-6 hover:-translate-y-1 transition">
-                <h3 className="font-bold text-lg force-light-title">
-                  Prescription History
-                </h3>
+  <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-6 hover:-translate-y-1 transition">
+    <h3 className="font-bold text-lg force-light-title">
+      Smart Leave-Time Guide
+    </h3>
 
-                <p className="text-slate-500 dark:text-slate-400 mt-2">
-                  View all previous prescriptions.
-                </p>
+    <p className="text-slate-500 dark:text-slate-400 mt-2">
+      Know when to leave based on queue speed, travel time, and safety buffer.
+    </p>
 
-                <Link
-                  href="/prescription-history"
-                  className="inline-block mt-4 text-blue-600 dark:text-blue-400 font-semibold"
-                >
-                  Open →
-                </Link>
-              </div>
+    <Link
+      href="/patient-queue"
+      className="inline-block mt-4 text-blue-600 dark:text-blue-400 font-semibold"
+    >
+      Track Queue →
+    </Link>
+  </div>
 
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-6 hover:-translate-y-1 transition">
-                <h3 className="font-bold text-lg force-light-title">
-                  Appointment History
-                </h3>
+  <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-6 hover:-translate-y-1 transition">
+    <h3 className="font-bold text-lg force-light-title">
+      Find Faster Care
+    </h3>
 
-                <p className="text-slate-500 dark:text-slate-400 mt-2">
-                  Review previous doctor visits.
-                </p>
+    <p className="text-slate-500 dark:text-slate-400 mt-2">
+      Search symptoms again and compare faster nearby care options.
+    </p>
 
-                <Link
-                  href="/appointment-history"
-                  className="inline-block mt-4 text-blue-600 dark:text-blue-400 font-semibold"
-                >
-                  Open →
-                </Link>
-              </div>
+    <Link
+      href="/care-finder"
+      className="inline-block mt-4 text-blue-600 dark:text-blue-400 font-semibold"
+    >
+      Open Care Finder →
+    </Link>
+  </div>
             </div>
           </>
         )}

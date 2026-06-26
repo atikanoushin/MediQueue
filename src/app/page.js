@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { translations } from "@/data/translations";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -11,6 +15,41 @@ export default function Home() {
 
   const t = translations[language];
   const isDark = theme === "dark";
+  const router = useRouter();
+const [user, setUser] = useState(null);
+const [role, setRole] = useState(null);
+const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+    setRole(localStorage.getItem("mediqueueRole"));
+  });
+
+  return () => unsubscribe();
+}, []);
+
+const handleLogout = async () => {
+  localStorage.removeItem("mediqueueRole");
+  await signOut(auth);
+  setUser(null);
+  setRole(null);
+  router.push("/");
+};
+
+const handleDoctorPortal = async () => {
+  if (user && role === "doctor") {
+    router.push("/doctor-dashboard");
+    return;
+  }
+
+  if (user && role === "patient") {
+    alert("You are signed in as a patient. Please logout and sign in as a doctor to access the Doctor Portal.");
+    return;
+  }
+
+  router.push("/login");
+};
 
   return (
     <main className={`min-h-screen ${isDark ? "bg-slate-950 text-white" : "bg-white text-slate-900"}`}>
@@ -42,12 +81,26 @@ export default function Home() {
               {t.browseDoctors}
             </Link>
 
-            <Link href="/doctor-dashboard" className="hover:text-blue-500 transition">
-              {t.forDoctors}
-            </Link>
+            <button
+  onClick={handleDoctorPortal}
+  className="hover:text-blue-500 transition"
+>
+  {t.forDoctors}
+</button>
           </div>
 
-          <div className="flex items-center gap-3">
+          <button
+  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+  className={`md:hidden border px-4 py-2 rounded-xl font-semibold ${
+    isDark
+      ? "border-slate-700 text-white"
+      : "border-slate-200 text-slate-700"
+  }`}
+>
+  ☰
+</button>
+
+          <div className="hidden md:flex items-center gap-3">
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
@@ -71,25 +124,134 @@ export default function Home() {
               {isDark ? "☀️ Light" : "🌙 Dark"}
             </button>
 
-            <Link
-              href="/login"
-              className={`border px-5 py-2 rounded-xl font-semibold transition ${
-                isDark
-                  ? "border-slate-700 text-slate-200 hover:border-blue-400"
-                  : "border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600"
-              }`}
-            >
-              {t.login}
-            </Link>
+            {user ? (
+  <>
+    <Link
+      href={role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard"}
+      className={`border px-5 py-2 rounded-xl font-semibold transition ${
+        isDark
+          ? "border-slate-700 text-slate-200 hover:border-blue-400"
+          : "border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600"
+      }`}
+    >
+      {role === "doctor" ? "Doctor Dashboard" : "Patient Dashboard"}
+    </Link>
 
-            <Link
-              href="/login"
-              className="bg-blue-600 text-white px-5 py-2 rounded-xl font-semibold shadow-sm hover:bg-blue-700 hover:scale-105 transition"
-            >
-              {t.signUp}
-            </Link>
+    <button
+      onClick={handleLogout}
+      className="bg-red-600 text-white px-5 py-2 rounded-xl font-semibold shadow-sm hover:bg-red-700 transition"
+    >
+      Logout
+    </button>
+  </>
+) : (
+  <>
+    <Link
+      href="/login"
+      className={`border px-5 py-2 rounded-xl font-semibold transition ${
+        isDark
+          ? "border-slate-700 text-slate-200 hover:border-blue-400"
+          : "border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600"
+      }`}
+    >
+      {t.login}
+    </Link>
+
+    <Link
+      href="/login"
+      className="bg-blue-600 text-white px-5 py-2 rounded-xl font-semibold shadow-sm hover:bg-blue-700 hover:scale-105 transition"
+    >
+      {t.signUp}
+    </Link>
+  </>
+)}
           </div>
         </div>
+        {mobileMenuOpen && (
+  <div
+    className={`md:hidden px-6 pb-5 flex flex-col gap-3 ${
+      isDark ? "bg-slate-950" : "bg-white"
+    }`}
+  >
+    <Link href="/" className="font-semibold text-blue-500">
+      {t.home}
+    </Link>
+
+    <Link href="/care-finder" className="font-semibold">
+      {t.quickCare}
+    </Link>
+
+    <Link href="/doctors" className="font-semibold">
+      {t.browseDoctors}
+    </Link>
+
+    <button
+      onClick={handleDoctorPortal}
+      className="text-left font-semibold"
+    >
+      {t.forDoctors}
+    </button>
+
+    <select
+      value={language}
+      onChange={(e) => setLanguage(e.target.value)}
+      className={`border rounded-xl px-3 py-2 text-sm font-semibold outline-none ${
+        isDark
+          ? "bg-slate-900 border-slate-700 text-white"
+          : "bg-white border-slate-200 text-slate-700"
+      }`}
+    >
+      <option value="en">English</option>
+      <option value="bn">বাংলা</option>
+      <option value="es">Español</option>
+    </select>
+
+    <button
+      onClick={toggleTheme}
+      className={`border px-4 py-2 rounded-xl font-semibold text-sm ${
+        isDark
+          ? "border-slate-700 text-slate-200"
+          : "border-slate-200 text-slate-700"
+      }`}
+    >
+      {isDark ? "☀️ Light" : "🌙 Dark"}
+    </button>
+
+    {user ? (
+      <>
+        <Link
+          href={role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard"}
+          className="border border-blue-600 text-blue-600 text-center px-5 py-2 rounded-xl font-semibold"
+        >
+          {role === "doctor" ? "Doctor Dashboard" : "Patient Dashboard"}
+        </Link>
+
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 text-white px-5 py-2 rounded-xl font-semibold"
+        >
+          Logout
+        </button>
+      </>
+    ) : (
+      <>
+        <Link
+          href="/login"
+          className="border border-slate-200 text-center px-5 py-2 rounded-xl font-semibold"
+        >
+          {t.login}
+        </Link>
+
+        <Link
+          href="/login"
+          className="bg-blue-600 text-white text-center px-5 py-2 rounded-xl font-semibold"
+        >
+          {t.signUp}
+        </Link>
+      </>
+    )}
+  </div>
+)}
       </nav>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto px-6 py-14 items-center">

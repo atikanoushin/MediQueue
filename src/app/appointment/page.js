@@ -115,7 +115,7 @@ function AppointmentContent() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                min="2026-01-01"
+                min={new Date().toISOString().split("T")[0]}
                 max="2030-12-31"
                 className="mt-2 w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:border-blue-500"
                 required
