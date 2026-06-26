@@ -39,9 +39,9 @@ function AppointmentContent() {
         userEmail: auth.currentUser.email,
         doctorName: selectedDoctor,
         doctorEmail:
-          from === "doctor"
-            ? auth.currentUser.email
-            : "demo-doctor@mediqueue.com",
+  from === "doctor"
+    ? auth.currentUser.email
+    : "demo.doctor@mediqueue.com",
         specialty: selectedSpecialty,
         date,
         time,

@@ -30,17 +30,19 @@ export default function DoctorDashboardPage() {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const role = localStorage.getItem("mediqueueRole");
 
-      fetchAppointments();
-    });
+    if (!user || role !== "doctor") {
+      router.replace("/login");
+      return;
+    }
 
-    return () => unsubscribe();
-  }, [router]);
+    fetchAppointments();
+  });
+
+  return () => unsubscribe();
+}, [router]);
 
   const clearQueue = async () => {
     const confirmClear = confirm(
@@ -65,9 +67,12 @@ export default function DoctorDashboardPage() {
   };
 
   const handleLogout = async () => {
-    await signOut(auth);
-    router.push("/");
-  };
+  localStorage.removeItem("mediqueueRole");
+
+  await signOut(auth);
+
+  router.push("/");
+};
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">

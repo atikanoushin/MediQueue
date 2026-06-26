@@ -27,11 +27,13 @@ export default function LoginPage() {
         await signInWithEmailAndPassword(auth, email, password);
       }
 
-      if (role === "doctor") {
-        router.replace("/doctor-dashboard");
-      } else {
-        router.replace("/patient-dashboard");
-      }
+      localStorage.setItem("mediqueueRole", role);
+
+if (role === "doctor") {
+  router.replace("/doctor-dashboard");
+} else {
+  router.replace("/patient-dashboard");
+}
     } catch (error) {
       alert(error.message);
     }

@@ -40,22 +40,27 @@ export default function PatientDashboardPage() {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const role = localStorage.getItem("mediqueueRole");
 
-      fetchLatestAppointment(user.email);
-    });
+    if (!user || role !== "patient") {
+      router.replace("/login");
+      return;
+    }
 
-    return () => unsubscribe();
-  }, [router]);
+    fetchLatestAppointment(user.email);
+  });
+
+  return () => unsubscribe();
+}, [router]);
 
   const handleLogout = async () => {
-    await signOut(auth);
-    router.push("/");
-  };
+  localStorage.removeItem("mediqueueRole");
+
+  await signOut(auth);
+
+  router.push("/");
+};
 
   const cancelAppointment = async () => {
     if (!appointment) return;
