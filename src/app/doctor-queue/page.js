@@ -153,6 +153,10 @@ export default function DoctorQueuePage() {
                     <Link
                       href={`/prescription?patient=${encodeURIComponent(
                         currentPatient.patientName
+                      )}&doctor=${encodeURIComponent(
+                        currentPatient.doctorName
+                      )}&specialty=${encodeURIComponent(
+                        currentPatient.specialty
                       )}`}
                       className="flex-1 bg-blue-600 text-white text-center py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
                     >

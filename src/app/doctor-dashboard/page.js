@@ -170,10 +170,10 @@ export default function DoctorDashboardPage() {
             </div>
 
             <Link
-              href="/appointment?from=doctor"
+              href="/add-walkin"
               className="w-full sm:w-auto bg-blue-600 text-white text-center px-5 py-2 rounded-xl font-semibold hover:bg-blue-700 transition"
             >
-              Add Appointment
+              Add Walk-in Patient
             </Link>
           </div>
 

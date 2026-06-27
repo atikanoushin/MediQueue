@@ -121,7 +121,10 @@ export default function DoctorsPage() {
 
                 <div className="flex flex-col sm:flex-row gap-3 mt-6">
                   <Link
-                    href="/doctor-profile"
+                    href={`/doctor-profile?doctor=${
+                      encodeURIComponent(doctor.name)}&specialty=${
+                        encodeURIComponent(doctor.specialty)}&experience=${encodeURIComponent(
+                          doctor.experience)}&fee=${encodeURIComponent(doctor.fee)}`}
                     className="flex-1 border border-blue-600 text-blue-600 dark:text-blue-300 dark:border-blue-400 text-center py-2 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-slate-800 transition"
                   >
                     View Profile

@@ -264,7 +264,7 @@ export default function PatientQueuePage() {
           </Link>
 
           <Link
-            href="/appointment"
+            href="/care-finder"
             className="border border-blue-600 text-blue-600 dark:text-blue-300 dark:border-blue-400 text-center px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-slate-900 transition"
           >
             Book Another Appointment
