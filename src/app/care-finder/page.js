@@ -13,7 +13,6 @@ const clinicData = {
     neuro: ["NewYork-Presbyterian Neurology", "NYU Langone Neurology", "Mount Sinai Neurology"],
     general: ["CityMD Urgent Care", "NYU Langone Primary Care", "Mount Sinai Primary Care"],
   },
-
   california: {
     urgent: ["UCLA Immediate Care", "Stanford Express Care", "Cedars-Sinai Urgent Care"],
     ortho: ["UCLA Orthopaedic Surgery", "Stanford Orthopaedics", "Cedars-Sinai Orthopedics"],
@@ -22,7 +21,6 @@ const clinicData = {
     neuro: ["UCLA Neurology", "Stanford Neurology", "Cedars-Sinai Neurology"],
     general: ["UCLA Primary Care", "Stanford Primary Care", "Cedars-Sinai Primary Care"],
   },
-
   dhaka: {
     urgent: ["Ibn Sina Diagnostic & Consultation Center", "Square Hospital Emergency", "Dhaka Medical College Hospital"],
     ortho: ["Ibn Sina Orthopedic Center", "Square Hospital Orthopedics", "Dhaka Medical Orthopedic Unit"],
@@ -31,7 +29,6 @@ const clinicData = {
     neuro: ["National Institute of Neurosciences", "Square Hospital Neurology", "Ibn Sina Neurology"],
     general: ["Popular Diagnostic Center", "Ibn Sina Medical Center", "Square Hospital Outpatient"],
   },
-
   delhi: {
     urgent: ["Apollo Urgent Care", "Max Healthcare Emergency", "AIIMS Emergency"],
     ortho: ["Apollo Orthopedics", "Max Orthopedics", "AIIMS Orthopedic Department"],
@@ -40,7 +37,6 @@ const clinicData = {
     neuro: ["AIIMS Neurology", "Apollo Neurology", "Max Neurosciences"],
     general: ["Apollo Primary Care", "Max Healthcare OPD", "AIIMS OPD"],
   },
-
   karachi: {
     urgent: ["Aga Khan Urgent Care", "Liaquat National Emergency", "Jinnah Hospital Emergency"],
     ortho: ["Aga Khan Orthopedics", "Liaquat National Orthopedics", "Jinnah Hospital Orthopedic Unit"],
@@ -49,7 +45,6 @@ const clinicData = {
     neuro: ["Aga Khan Neurology", "Liaquat National Neurology", "Jinnah Hospital Neurology"],
     general: ["Aga Khan Family Medicine", "Liaquat National OPD", "South City Hospital OPD"],
   },
-
   toronto: {
     urgent: ["Toronto General Emergency", "Sunnybrook Urgent Care", "North York General Emergency"],
     ortho: ["Sunnybrook Orthopaedics", "Toronto Western Orthopedics", "North York General Orthopedics"],
@@ -64,6 +59,7 @@ export default function CareFinderPage() {
   const [symptom, setSymptom] = useState("");
   const [location, setLocation] = useState("newyork");
   const [result, setResult] = useState(null);
+  const [checkingLocation, setCheckingLocation] = useState(false);
 
   const buildResult = ({ specialty, urgency, reason, savedTime, type }) => {
     const clinics = clinicData[location][type];
@@ -74,110 +70,120 @@ export default function CareFinderPage() {
       reason,
       savedTime,
       options: [
-  {
-    clinic: clinics[0],
-    wait: "12 minutes",
-    waitMinutes: 12,
-    travelMinutes: 8,
-    treatmentDelayMinutes: 5,
-    totalTreatmentMinutes: 25,
-    distance: "2.4 miles",
-    tag: "Best Match",
-  },
-  {
-    clinic: clinics[1],
-    wait: "25 minutes",
-    waitMinutes: 25,
-    travelMinutes: 13,
-    treatmentDelayMinutes: 8,
-    totalTreatmentMinutes: 46,
-    distance: "3.1 miles",
-    tag: "Nearby",
-  },
-  {
-    clinic: clinics[2],
-    wait: "1 hour 40 minutes",
-    waitMinutes: 100,
-    travelMinutes: 18,
-    treatmentDelayMinutes: 15,
-    totalTreatmentMinutes: 133,
-    distance: "5.2 miles",
-    tag: "Long Wait",
-  },
-],
+        {
+          clinic: clinics[0],
+          wait: "12 minutes",
+          waitMinutes: 12,
+          travelMinutes: 8,
+          treatmentDelayMinutes: 5,
+          totalTreatmentMinutes: 25,
+          distance: "2.4 miles",
+          tag: "Best Match",
+        },
+        {
+          clinic: clinics[1],
+          wait: "25 minutes",
+          waitMinutes: 25,
+          travelMinutes: 13,
+          treatmentDelayMinutes: 8,
+          totalTreatmentMinutes: 46,
+          distance: "3.1 miles",
+          tag: "Nearby",
+        },
+        {
+          clinic: clinics[2],
+          wait: "1 hour 40 minutes",
+          waitMinutes: 100,
+          travelMinutes: 18,
+          treatmentDelayMinutes: 15,
+          totalTreatmentMinutes: 133,
+          distance: "5.2 miles",
+          tag: "Long Wait",
+        },
+      ],
     });
   };
 
-  const findCare = (customSymptom) => {
-    const input = customSymptom || symptom;
+  const findCare = () => {
+    const input = symptom;
+
     if (!input.trim()) {
-  alert("Please describe your symptom first.");
-  return;
-}
+      alert("Please describe your symptom first.");
+      return;
+    }
 
-const text = input.toLowerCase();
-const knownSymptomWords = [
-  "burn",
-  "burned",
-  "fire",
-  "hot water",
-  "wrist",
-  "bone",
-  "arm",
-  "leg",
-  "sprain",
-  "heart",
-  "chest",
-  "skin",
-  "rash",
-  "head",
-  "headache",
-  "fever",
-  "cough",
-  "flu",
-  "cold",
-  "pain",
-  "hurt",
-  "injury",
-  "ache",
-  "swelling",
-  "bleeding",
-  "breathing",
-];
+    setResult(null);
+    setCheckingLocation(true);
 
-const hasKnownSymptomWord = knownSymptomWords.some((word) =>
-  text.includes(word)
-);
+    setTimeout(() => {
+      runCareMatch(input);
+    }, 1500);
+  };
 
-if (!hasKnownSymptomWord) {
-  setResult({
-    invalid: true,
-    message:
-      "We could not understand this as a symptom. Please describe what you are feeling, such as fever, wrist pain, burn, rash, chest pain, or headache.",
-  });
+  const runCareMatch = (input) => {
+    setCheckingLocation(false);
 
-  return;
-}
-if (
-  text.includes("difficulty breathing") ||
-  text.includes("can't breathe") ||
-  text.includes("heart attack") ||
-  text.includes("stroke") ||
-  text.includes("unconscious") ||
-  text.includes("severe bleeding") ||
-  text.includes("not breathing") ||
-  text.includes("choking")
-) {
-  setResult({
-    emergency: true,
-    message:
-      "Your symptoms may require immediate emergency care. Do not wait in a clinic queue. Call emergency services or visit the nearest emergency department immediately.",
-  });
+    const text = input.toLowerCase();
 
-  return;
-}
+    const knownSymptomWords = [
+      "burn",
+      "burned",
+      "fire",
+      "hot water",
+      "wrist",
+      "bone",
+      "arm",
+      "leg",
+      "sprain",
+      "heart",
+      "chest",
+      "skin",
+      "rash",
+      "head",
+      "headache",
+      "fever",
+      "cough",
+      "flu",
+      "cold",
+      "pain",
+      "hurt",
+      "injury",
+      "ache",
+      "swelling",
+      "bleeding",
+      "breathing",
+    ];
 
-    if (customSymptom) setSymptom(customSymptom);
+    const hasKnownSymptomWord = knownSymptomWords.some((word) =>
+      text.includes(word)
+    );
+
+    if (!hasKnownSymptomWord) {
+      setResult({
+        invalid: true,
+        message:
+          "We could not understand this as a symptom. Please describe what you are feeling, such as fever, wrist pain, burn, rash, chest pain, or headache.",
+      });
+      return;
+    }
+
+    if (
+      text.includes("difficulty breathing") ||
+      text.includes("can't breathe") ||
+      text.includes("heart attack") ||
+      text.includes("stroke") ||
+      text.includes("unconscious") ||
+      text.includes("severe bleeding") ||
+      text.includes("not breathing") ||
+      text.includes("choking")
+    ) {
+      setResult({
+        emergency: true,
+        message:
+          "Your symptoms may require immediate emergency care. Do not wait in a clinic queue. Call emergency services or visit the nearest emergency department immediately.",
+      });
+      return;
+    }
 
     if (
       text.includes("burn") ||
@@ -249,35 +255,31 @@ if (
         reason:
           "Fever, cough, and flu symptoms are usually best handled first by general medicine or primary care.",
       });
-    } 
-    else {
-  buildResult({
-    specialty: "General Medicine",
-    urgency: "Needs review",
-    savedTime: "50 min",
-    type: "general",
-    reason:
-      "MediQueue could not confidently identify a specific specialty from your description. For safety, we recommend starting with general medicine or primary care, where the patient can be evaluated and referred if needed.",
-  });
-}
+    } else {
+      buildResult({
+        specialty: "General Medicine",
+        urgency: "Needs review",
+        savedTime: "50 min",
+        type: "general",
+        reason:
+          "MediQueue could not confidently identify a specific specialty from your description. For safety, we recommend starting with general medicine or primary care, where the patient can be evaluated and referred if needed.",
+      });
+    }
   };
 
-const bestOption = result?.emergency
-  ? null
-  : result?.options?.[0];
+  const bestOption = result?.emergency ? null : result?.options?.[0];
+  const otherOptions = result?.emergency ? [] : result?.options?.slice(1) || [];
+  const slowestOption = result?.options?.[2] || null;
 
-const otherOptions = result?.emergency
-  ? []
-  : result?.options?.slice(1) || [];
-const slowestOption = result?.options?.[2] || null;
-const minutesSaved =
-  bestOption && slowestOption
-    ? slowestOption.totalTreatmentMinutes - bestOption.totalTreatmentMinutes
-    : 0;
+  const minutesSaved =
+    bestOption && slowestOption
+      ? slowestOption.totalTreatmentMinutes - bestOption.totalTreatmentMinutes
+      : 0;
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
       <Navbar />
+
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-slate-900 dark:text-white">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
           <div className="lg:col-span-2">
@@ -289,7 +291,8 @@ const minutesSaved =
 
             <p className="text-slate-500 mt-4 text-lg max-w-3xl">
               Describe your symptom, choose your location, and MediQueue
-              compares nearby care options by specialty, distance, and live wait time.
+              compares nearby care options by specialty, distance, and live wait
+              time.
             </p>
           </div>
 
@@ -308,7 +311,8 @@ const minutesSaved =
           <select
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-xl p-3 mt-3 outline-none focus:border-blue-500">
+            className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-xl p-3 mt-3 outline-none focus:border-blue-500"
+          >
             <option value="newyork">New York, USA</option>
             <option value="california">California, USA</option>
             <option value="dhaka">Dhaka, Bangladesh</option>
@@ -331,15 +335,16 @@ const minutesSaved =
 
           <div className="flex flex-wrap gap-3 mt-4">
             {[
-  "My hand got burned",
-  "I sprained my wrist",
-  "I have chest pain",
-  "Difficulty breathing",
-  "Skin rash",
-  "Fever and cough",
-].map((example) => (
+              "My hand got burned",
+              "I sprained my wrist",
+              "I have chest pain",
+              "Difficulty breathing",
+              "Skin rash",
+              "Fever and cough",
+            ].map((example) => (
               <button
                 key={example}
+                type="button"
                 onClick={() => setSymptom(example)}
                 className="bg-slate-100 text-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-50 hover:text-blue-600 transition"
               >
@@ -349,62 +354,82 @@ const minutesSaved =
           </div>
 
           <button
-            onClick={() => findCare()}
-            className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+            onClick={findCare}
+            disabled={checkingLocation}
+            className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition disabled:opacity-60"
           >
-            Find Fastest Care
+            {checkingLocation ? "Checking..." : "Find Fastest Care"}
           </button>
         </div>
 
+        {checkingLocation && (
+          <div className="mt-8 bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <p className="text-blue-600 dark:text-blue-400 font-semibold">
+              Checking nearby care options...
+            </p>
+
+            <h2 className="text-2xl font-extrabold mt-3">
+              Estimating location, travel time, and queue speed
+            </h2>
+
+            <p className="text-slate-500 dark:text-slate-400 mt-3">
+              MediQueue is comparing nearby clinics using demo location
+              estimates, current wait time, and total time to treatment.
+            </p>
+
+            <div className="mt-5 h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full w-1/2 bg-blue-600 rounded-full animate-pulse" />
+            </div>
+          </div>
+        )}
+
         {result?.invalid && (
-  <div className="mt-8 bg-yellow-50 border-2 border-yellow-300 rounded-3xl p-8 shadow-sm">
-    <p className="text-yellow-700 font-bold text-lg">
-      We couldn't understand that symptom
-    </p>
+          <div className="mt-8 bg-yellow-50 border-2 border-yellow-300 rounded-3xl p-5 sm:p-8 shadow-sm">
+            <p className="text-yellow-700 font-bold text-lg">
+              We couldn&apos;t understand that symptom
+            </p>
 
-    <p className="mt-3 text-yellow-700">
-      {result.message}
-    </p>
+            <p className="mt-3 text-yellow-700">{result.message}</p>
 
-    <p className="mt-4 text-slate-600">
-      Try examples like: “I sprained my wrist”, “I have a fever”, or “My hand got burned.”
-    </p>
-  </div>
-)}
+            <p className="mt-4 text-slate-600">
+              Try examples like: “I sprained my wrist”, “I have a fever”, or
+              “My hand got burned.”
+            </p>
+          </div>
+        )}
 
         {result?.emergency && (
-  <div className="mt-8 bg-red-50 border-2 border-red-500 rounded-3xl p-5 sm:p-8 shadow-sm">
-    <p className="text-red-600 font-bold text-lg">
-      🚨 EMERGENCY DETECTED
-    </p>
+          <div className="mt-8 bg-red-50 border-2 border-red-500 rounded-3xl p-5 sm:p-8 shadow-sm">
+            <p className="text-red-600 font-bold text-lg">
+              🚨 EMERGENCY DETECTED
+            </p>
 
-    <h2 className="text-3xl font-extrabold mt-3 text-red-700">
-      Seek Immediate Medical Attention
-    </h2>
+            <h2 className="text-3xl font-extrabold mt-3 text-red-700">
+              Seek Immediate Medical Attention
+            </h2>
 
-    <p className="mt-4 text-red-600 text-lg">
-      {result.message}
-    </p>
+            <p className="mt-4 text-red-600 text-lg">{result.message}</p>
 
-    <div className="bg-red-100 rounded-2xl p-5 mt-6">
-      <p className="font-semibold text-red-700">
-        Recommended Action
-      </p>
+            <div className="bg-red-100 rounded-2xl p-5 mt-6">
+              <p className="font-semibold text-red-700">Recommended Action</p>
 
-      <p className="mt-2 text-red-600">
-        Call emergency services or go directly to the nearest emergency room.
-      </p>
-    </div>
-  </div>
-)}
+              <p className="mt-2 text-red-600">
+                Call emergency services or go directly to the nearest emergency
+                room.
+              </p>
+            </div>
+          </div>
+        )}
 
-{result && !result.emergency && !result.invalid && (
+        {result && !result.emergency && !result.invalid && (
           <div className="mt-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-8">
-                <div className="flex items-center justify-between gap-4">
+              <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <p className="text-green-600 font-semibold">
-                    BEST MATCH FOUND
+                    {result.urgency === "Needs review"
+                      ? "SAFE STARTING POINT"
+                      : "BEST MATCH FOUND"}
                   </p>
 
                   <span
@@ -416,9 +441,7 @@ const minutesSaved =
                         : "bg-green-100 text-green-700"
                     }`}
                   >
-                    {result.urgency === "Needs review"
-  ? "SAFE STARTING POINT"
-  : "BEST MATCH FOUND"}
+                    {result.urgency}
                   </span>
                 </div>
 
@@ -428,7 +451,7 @@ const minutesSaved =
 
                 <p className="text-slate-500 mt-2">
                   Recommended specialty:{" "}
-                  <span className="font-semibold text-slate-800">
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">
                     {result.specialty}
                   </span>
                 </p>
@@ -444,7 +467,9 @@ const minutesSaved =
                   </div>
 
                   <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-5">
-                    <p className="text-slate-400 text-sm">Distance</p>
+                    <p className="text-slate-400 text-sm">
+                      Estimated Distance
+                    </p>
                     <p className="text-2xl font-extrabold mt-1">
                       {bestOption.distance}
                     </p>
@@ -459,39 +484,46 @@ const minutesSaved =
                 </div>
 
                 <div className="bg-green-50 dark:bg-green-500/15 rounded-2xl p-5 mt-6 border border-green-100 dark:border-green-400/30">
-  <p className="text-green-600 dark:text-green-300 text-sm font-semibold">
-    TOTAL TIME TO TREATMENT
-  </p>
+                  <p className="text-green-600 dark:text-green-300 text-sm font-semibold">
+                    TOTAL TIME TO TREATMENT
+                  </p>
 
-  <h3 className="text-4xl font-extrabold mt-2 text-green-700 dark:text-green-300">
-    {bestOption.totalTreatmentMinutes} min
-  </h3>
+                  <h3 className="text-4xl font-extrabold mt-2 text-green-700 dark:text-green-300">
+                    {bestOption.totalTreatmentMinutes} min
+                  </h3>
 
-  <p className="text-slate-600 dark:text-slate-300 mt-2">
-    Includes estimated travel time, current queue wait, and treatment delay.
-  </p>
+                  <p className="text-slate-600 dark:text-slate-300 mt-2">
+                    Includes estimated travel time, current queue wait, and
+                    treatment delay.
+                  </p>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-    <div>
-      <p className="text-slate-400 text-sm">Travel</p>
-      <p className="font-bold">{bestOption.travelMinutes} min</p>
-    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+                    <div>
+                      <p className="text-slate-400 text-sm">Travel</p>
+                      <p className="font-bold">
+                        {bestOption.travelMinutes} min
+                      </p>
+                    </div>
 
-    <div>
-      <p className="text-slate-400 text-sm">Queue</p>
-      <p className="font-bold">{bestOption.waitMinutes} min</p>
-    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm">Queue</p>
+                      <p className="font-bold">{bestOption.waitMinutes} min</p>
+                    </div>
 
-    <div>
-      <p className="text-slate-400 text-sm">Clinic Delay</p>
-      <p className="font-bold">{bestOption.treatmentDelayMinutes} min</p>
-    </div>
-  </div>
-</div>
+                    <div>
+                      <p className="text-slate-400 text-sm">Clinic Delay</p>
+                      <p className="font-bold">
+                        {bestOption.treatmentDelayMinutes} min
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-5 mt-6">
                   <p className="font-bold">Why this recommendation?</p>
-                  <p className="text-slate-600 mt-2">{result.reason}</p>
+                  <p className="text-slate-600 dark:text-slate-300 mt-2">
+                    {result.reason}
+                  </p>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 mt-8">
@@ -506,14 +538,14 @@ const minutesSaved =
 
                   <Link
                     href="/patient-queue"
-                    className="flex-1 border border-blue-600 text-blue-600 text-center py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
+                    className="flex-1 border border-blue-600 text-blue-600 dark:text-blue-300 dark:border-blue-400 text-center py-3 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-slate-900 transition"
                   >
                     View Queue
                   </Link>
                 </div>
               </div>
 
-              <aside className="bg-blue-600 text-white rounded-3xl p-8 shadow-sm">
+              <aside className="bg-blue-600 text-white rounded-3xl p-5 sm:p-8 shadow-sm">
                 <p className="text-blue-100 font-semibold">WAIT TIME SAVED</p>
 
                 <h3 className="text-5xl font-extrabold mt-4">
@@ -542,10 +574,10 @@ const minutesSaved =
                     key={option.clinic}
                     className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:-translate-y-1 hover:shadow-md transition"
                   >
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <h4 className="text-xl font-bold">{option.clinic}</h4>
 
-                      <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-semibold">
+                      <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-semibold w-fit">
                         {option.tag}
                       </span>
                     </div>
@@ -557,7 +589,9 @@ const minutesSaved =
                       </div>
 
                       <div>
-                        <p className="text-slate-400 text-sm">Distance</p>
+                        <p className="text-slate-400 text-sm">
+                          Estimated Distance
+                        </p>
                         <p className="font-bold">{option.distance}</p>
                       </div>
                     </div>
@@ -566,7 +600,7 @@ const minutesSaved =
                       href={`/appointment?doctor=${encodeURIComponent(
                         option.clinic
                       )}&specialty=${encodeURIComponent(result.specialty)}`}
-                      className="inline-block mt-5 text-blue-600 font-semibold"
+                      className="inline-block mt-5 text-blue-600 dark:text-blue-400 font-semibold"
                     >
                       Book this option →
                     </Link>
@@ -578,6 +612,5 @@ const minutesSaved =
         )}
       </section>
     </main>
-    
   );
 }
