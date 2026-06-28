@@ -1,4 +1,4 @@
-# 🏥 MediQueue
+# MediQueue
 
 > **Find the fastest appropriate healthcare, not just the nearest one.**
 
@@ -8,7 +8,7 @@ Instead of simply recommending the closest hospital, MediQueue recommends the op
 
 ---
 
-# 🚀 Inspiration
+# Inspiration
 
 This project began with a personal experience.
 
@@ -20,7 +20,7 @@ That experience made me realize something simple:
 
 Patients often don't know **where they can receive the fastest appropriate treatment**. They usually go to the biggest or most familiar hospital, even when another nearby clinic could safely treat them much sooner.
 
-Doctors and clinics face a different challenge. They often have uneven patient loads—some clinics are overwhelmed with long queues while others nearby have available capacity. Without better visibility, both patients and healthcare providers lose valuable time.
+Doctors and clinics face a different challenge. They often have uneven patient loads some clinics are overwhelmed with long queues while others nearby have available capacity. Without better visibility, both patients and healthcare providers lose valuable time.
 
 That experience inspired MediQueue.
 
@@ -29,7 +29,7 @@ Instead of only helping people find doctors, MediQueue helps patients find the *
 
 ---
 
-# 💡 What MediQueue Does
+# What MediQueue Does
 
 ### 👤 Patient Features
 
@@ -60,7 +60,7 @@ Instead of only helping people find doctors, MediQueue helps patients find the *
 
 ---
 
-# 🧠 How MediQueue Makes Decisions
+# How MediQueue Makes Decisions
 
 Instead of recommending the closest clinic, MediQueue follows a transparent decision workflow.
 
@@ -78,7 +78,7 @@ Instead of recommending the closest clinic, MediQueue follows a transparent deci
 
 ---
 
-# ⚙️ Tech Stack
+# Tech Stack
 
 ### Frontend
 
@@ -108,7 +108,7 @@ Instead of recommending the closest clinic, MediQueue follows a transparent deci
 
 ---
 
-# ✨ Features Built During Hackathon
+# Features Built During Hackathon
 
 * Smart QuickCare Locator
 * Emergency Detection
@@ -127,7 +127,7 @@ Instead of recommending the closest clinic, MediQueue follows a transparent deci
 
 ---
 
-# 🏗 Project Structure
+# Project Structure
 
 ```text
 app/
@@ -140,7 +140,7 @@ public/
 
 ---
 
-# 🔑 Demo Accounts
+# Demo Accounts
 
 ## Doctor
 
@@ -174,7 +174,7 @@ Password
 
 ---
 
-# 🖥 Local Setup
+# Local Setup
 
 Clone the repository
 
@@ -202,7 +202,7 @@ http://localhost:3000
 
 ---
 
-# 🌎 Future Improvements
+# Future Improvements
 
 * GPS-based live travel estimation
 * AI-powered symptom analysis
@@ -214,6 +214,6 @@ http://localhost:3000
 
 ---
 
-# ❤️ Built for H0: Hack the Zero Stack with Vercel v0 and AWS Databases
+# Built for H0: Hack the Zero Stack with Vercel v0 and AWS Databases
 
 MediQueue was built to reduce unnecessary waiting, improve healthcare accessibility, and help patients receive treatment faster through intelligent queue-aware recommendations.
