@@ -41,7 +41,13 @@ function LoginContent() {
             saved.doctor
           )}&specialty=${encodeURIComponent(
             saved.specialty
-          )}&time=${encodeURIComponent(saved.time)}`
+          )}&time=${encodeURIComponent(
+            saved.time
+          )}&date=${encodeURIComponent(
+            saved.date
+          )}&patientName=${encodeURIComponent(
+            saved.patientName
+          )}`
         );
 
         return;
