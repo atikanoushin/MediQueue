@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
@@ -9,7 +9,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
-export default function LoginPage() {
+function LoginContent() {
   const [role, setRole] = useState("patient");
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
@@ -30,31 +30,32 @@ export default function LoginPage() {
 
       localStorage.setItem("mediqueueRole", role);
 
-const redirect = searchParams.get("redirect");
-const pendingAppointment = sessionStorage.getItem("pendingAppointment");
+      const redirect = searchParams.get("redirect");
+      const pendingAppointment = sessionStorage.getItem("pendingAppointment");
 
-if (role === "patient" && redirect === "appointment" && pendingAppointment) {
-  const saved = JSON.parse(pendingAppointment);
+      if (role === "patient" && redirect === "appointment" && pendingAppointment) {
+        const saved = JSON.parse(pendingAppointment);
 
-  router.replace(
-    `/appointment?doctor=${encodeURIComponent(saved.doctor)}&specialty=${encodeURIComponent(
-      saved.specialty
-    )}&time=${encodeURIComponent(saved.time)}`
-  );
+        router.replace(
+          `/appointment?doctor=${encodeURIComponent(
+            saved.doctor
+          )}&specialty=${encodeURIComponent(
+            saved.specialty
+          )}&time=${encodeURIComponent(saved.time)}`
+        );
 
-  return;
-}
+        return;
+      }
 
-if (role === "doctor") {
-  router.replace("/doctor-dashboard");
-} else {
-  router.replace("/patient-dashboard");
-}
+      if (role === "doctor") {
+        router.replace("/doctor-dashboard");
+      } else {
+        router.replace("/patient-dashboard");
+      }
     } catch (error) {
       alert(error.message);
     }
   };
-
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -197,5 +198,19 @@ if (role === "doctor") {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p className="text-slate-500">Loading login...</p>
+        </main>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
