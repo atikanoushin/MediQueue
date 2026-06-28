@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
 import {
@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -28,6 +29,21 @@ export default function LoginPage() {
       }
 
       localStorage.setItem("mediqueueRole", role);
+
+const redirect = searchParams.get("redirect");
+const pendingAppointment = sessionStorage.getItem("pendingAppointment");
+
+if (role === "patient" && redirect === "appointment" && pendingAppointment) {
+  const saved = JSON.parse(pendingAppointment);
+
+  router.replace(
+    `/appointment?doctor=${encodeURIComponent(saved.doctor)}&specialty=${encodeURIComponent(
+      saved.specialty
+    )}&time=${encodeURIComponent(saved.time)}`
+  );
+
+  return;
+}
 
 if (role === "doctor") {
   router.replace("/doctor-dashboard");

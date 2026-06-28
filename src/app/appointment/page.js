@@ -23,9 +23,21 @@ function AppointmentContent() {
     event.preventDefault();
 
     if (!auth.currentUser) {
-      router.replace("/login");
-      return;
-    }
+  sessionStorage.setItem(
+    "pendingAppointment",
+    JSON.stringify({
+      patientName,
+      doctor: selectedDoctor,
+      specialty: selectedSpecialty,
+      date,
+      time,
+      from,
+    })
+  );
+
+  router.replace("/login?redirect=appointment");
+  return;
+}
 
     setLoading(true);
 
@@ -52,8 +64,9 @@ function AppointmentContent() {
     setLoading(false);
 
     if (data.success) {
-      router.push(`/confirmation?from=${from}`);
-    } else {
+  sessionStorage.removeItem("pendingAppointment");
+  router.push(`/confirmation?from=${from}`);
+} else {
       alert(data.error);
     }
   };

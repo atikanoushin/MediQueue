@@ -1,17 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+
+const clinicOptions = {
+  "New York, USA": [
+    "CityMD Urgent Care",
+    "NYU Langone Primary Care",
+    "Mount Sinai Primary Care",
+  ],
+  "California, USA": [
+    "UCLA Primary Care",
+    "Stanford Primary Care",
+    "Cedars-Sinai Primary Care",
+  ],
+  "Dhaka, Bangladesh": [
+    "Popular Diagnostic Center",
+    "Ibn Sina Medical Center",
+    "Square Hospital Outpatient",
+  ],
+  "New Delhi, India": [
+    "Apollo Primary Care",
+    "Max Healthcare OPD",
+    "AIIMS OPD",
+  ],
+  "Karachi, Pakistan": [
+    "Aga Khan Family Medicine",
+    "Liaquat National OPD",
+    "South City Hospital OPD",
+  ],
+  "Toronto, Canada": [
+    "North York General Primary Care",
+    "Toronto General Outpatient",
+    "Sunnybrook Family Medicine",
+  ],
+};
 
 export default function AddWalkInPatientPage() {
   const router = useRouter();
 
   const [location, setLocation] = useState("New York, USA");
-  const [clinic, setClinic] = useState("CityMD Urgent Care");
+  const [clinic, setClinic] = useState(clinicOptions["New York, USA"][0]);
   const [patientName, setPatientName] = useState("");
   const [symptom, setSymptom] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      const role = localStorage.getItem("mediqueueRole");
+
+      if (!user || role !== "doctor") {
+        router.replace("/login");
+        return;
+      }
+
+      setCheckingAuth(false);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleLocationChange = (value) => {
+    setLocation(value);
+    setClinic(clinicOptions[value][0]);
+  };
 
   const addPatient = async (event) => {
     event.preventDefault();
@@ -49,20 +105,41 @@ export default function AddWalkInPatientPage() {
     }
   };
 
+  if (checkingAuth) {
+    return (
+      <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">
+          Checking access...
+        </p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <p className="text-blue-600 dark:text-blue-400 font-semibold">
-          Doctor Tools
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
+          <div>
+            <p className="text-blue-600 dark:text-blue-400 font-semibold">
+              Doctor Tools
+            </p>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold mt-2">
-          Add Walk-in Patient
-        </h1>
+            <h1 className="text-3xl sm:text-4xl font-extrabold mt-2">
+              Add Walk-in Patient
+            </h1>
 
-        <p className="text-slate-500 dark:text-slate-400 mt-2">
-          Add an in-person patient directly to today&apos;s live queue.
-        </p>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">
+              Add an in-person patient directly to today&apos;s live queue.
+            </p>
+          </div>
+
+          <Link
+            href="/doctor-dashboard"
+            className="w-full sm:w-auto text-center border border-blue-600 text-blue-600 dark:text-blue-300 dark:border-blue-400 px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 dark:hover:bg-slate-900 transition"
+          >
+            Back to Dashboard
+          </Link>
+        </div>
 
         <form
           onSubmit={addPatient}
@@ -72,15 +149,12 @@ export default function AddWalkInPatientPage() {
             <label className="font-semibold text-sm">Select Location</label>
             <select
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(e) => handleLocationChange(e.target.value)}
               className="mt-2 w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:border-blue-500"
             >
-              <option>New York, USA</option>
-              <option>California, USA</option>
-              <option>Dhaka, Bangladesh</option>
-              <option>New Delhi, India</option>
-              <option>Karachi, Pakistan</option>
-              <option>Toronto, Canada</option>
+              {Object.keys(clinicOptions).map((city) => (
+                <option key={city}>{city}</option>
+              ))}
             </select>
           </div>
 
@@ -91,12 +165,9 @@ export default function AddWalkInPatientPage() {
               onChange={(e) => setClinic(e.target.value)}
               className="mt-2 w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white p-3 rounded-xl outline-none focus:border-blue-500"
             >
-              <option>CityMD Urgent Care</option>
-              <option>NYU Langone Primary Care</option>
-              <option>Mount Sinai Primary Care</option>
-              <option>Aga Khan Family Medicine</option>
-              <option>Square Hospital Outpatient</option>
-              <option>Toronto General Outpatient</option>
+              {clinicOptions[location].map((clinicName) => (
+                <option key={clinicName}>{clinicName}</option>
+              ))}
             </select>
           </div>
 
