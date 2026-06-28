@@ -434,31 +434,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 animate-fade-up">
-        <h2 className="text-3xl font-bold text-center">How MediQueue Works</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-8">
-          {[
-            ["1. Describe Symptoms", "Tell MediQueue what you’re experiencing."],
-            ["2. Compare Care Options", "See nearby clinics by wait time, distance, and specialty."],
-            ["3. Book Appointment", "Reserve your spot in the live queue."],
-            ["4. Leave On Time", "Get ETA guidance based on queue speed and estimated travel time."],
-          ].map(([title, desc]) => (
-            <div
-              key={title}
-              className={`border rounded-2xl p-6 shadow-sm hover:-translate-y-2 hover:shadow-md transition duration-300 ${
-                isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"
-              }`}
-            >
-              <p className="text-blue-500 font-bold">{title}</p>
-              <p className={`mt-2 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                {desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
     </main>
   );
 }
